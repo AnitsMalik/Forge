@@ -12,14 +12,14 @@ export const db = knex({
     charset: 'utf8mb4',
   },
   pool: {
-    min: Number(process.env.DB_POOL_MIN) || 5,
-    max: Number(process.env.DB_POOL_MAX) || 30,
-    acquireTimeoutMillis: Number(process.env.DB_ACQUIRE_TIMEOUT_MS) || 10000,
-    createTimeoutMillis: 5000,
+    min: Number(process.env.DB_POOL_MIN) || 0,
+    max: Number(process.env.DB_POOL_MAX) || 10,
+    acquireTimeoutMillis: Number(process.env.DB_ACQUIRE_TIMEOUT_MS) || 30000,
+    createTimeoutMillis: 15000,
     idleTimeoutMillis: 30000,
     reapIntervalMillis: 1000,
-    createRetryIntervalMillis: 200,
-    propagateCreateError: false,
+    createRetryIntervalMillis: 500,
+    propagateCreateError: true,
     afterCreate: (conn: any, done: Function) => {
       conn.query("SET time_zone = '+00:00';", (err: any) => {
         if (err) return done(err, conn);

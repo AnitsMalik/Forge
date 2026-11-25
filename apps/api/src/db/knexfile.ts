@@ -58,20 +58,22 @@ const knexConfig: { [key: string]: Knex.Config } = {
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
+      charset: 'utf8mb4',
+      connectTimeout: 20000,
     },
     migrations: {
       directory: path.join(__dirname, 'migrations'),
       extension: 'js',
     },
     pool: {
-      min: Number(process.env.DB_POOL_MIN) || 10,
-      max: Number(process.env.DB_POOL_MAX) || 50,
-      acquireTimeoutMillis: Number(process.env.DB_ACQUIRE_TIMEOUT_MS) || 10000,
-      createTimeoutMillis: 5000,
+      min: Number(process.env.DB_POOL_MIN) || 0,
+      max: Number(process.env.DB_POOL_MAX) || 10,
+      acquireTimeoutMillis: Number(process.env.DB_ACQUIRE_TIMEOUT_MS) || 30000,
+      createTimeoutMillis: 15000,
       idleTimeoutMillis: 30000,
       reapIntervalMillis: 1000,
-      createRetryIntervalMillis: 200,
-      propagateCreateError: false,
+      createRetryIntervalMillis: 500,
+      propagateCreateError: true,
       afterCreate: (conn: any, done: Function) => {
         conn.query("SET time_zone = '+00:00';", (err: any) => {
           if (err) return done(err, conn);
