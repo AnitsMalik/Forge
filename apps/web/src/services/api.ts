@@ -396,8 +396,9 @@ import type {
 
 
 const getBaseUrl = (): string => {
-  if (import.meta.env.VITE_API_BASE_URL) {
-    return import.meta.env.VITE_API_BASE_URL;
+  const envApiUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL;
+  if (envApiUrl) {
+    return envApiUrl.endsWith('/api/v1') ? envApiUrl : `${envApiUrl.replace(/\/+$/, '')}/api/v1`;
   }
   // In browser context: use relative /api/v1 so requests go through Vite dev proxy or same-origin deployment
   if (typeof window !== 'undefined') {
