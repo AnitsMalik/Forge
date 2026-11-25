@@ -1,0 +1,490 @@
+{
+  "totalTables": 191,
+  "tableStats": {
+    "ab_test_experiments": 0,
+    "ab_test_variants": 0,
+    "active_user_presence_sessions": 2,
+    "agent_execution_steps": 5,
+    "agent_fleet_definitions": 5,
+    "agent_fleet_workflows": 1,
+    "agent_memories": 3,
+    "agent_runs": 0,
+    "agent_settings": 0,
+    "agent_workflow_executions": 1,
+    "analytics_metrics": 1128,
+    "analytics_winners": 1099,
+    "api_gateway_routes": 4,
+    "api_throttle_audit_logs": 38,
+    "api_token_bucket_quotas": 4,
+    "approval_comments": 0,
+    "approval_requests": 4,
+    "audit_trail_integrity_checkpoints": 131,
+    "auth_audit_logs": 1833,
+    "automation_dlq": 0,
+    "automation_runs": 178,
+    "automation_step_runs": 0,
+    "automations": 5,
+    "billing_dunning_events": 1,
+    "billing_email_logs": 1118,
+    "billing_events": 415,
+    "billing_invoices": 2,
+    "billing_notifications": 1,
+    "billing_webhook_deliveries": 93,
+    "brand_brains": 10,
+    "brand_goals": 6,
+    "brand_governance_settings": 2,
+    "brand_kits": 9,
+    "brand_knowledge_edges": 5,
+    "brand_knowledge_nodes": 6,
+    "brand_learning_insights": 1447,
+    "brand_performance_baselines": 4,
+    "brand_users": 9,
+    "brands": 54,
+    "campaigns": 34,
+    "canvas_document_snapshots": 2,
+    "chaos_experiments": 4,
+    "chaos_fault_executions": 1,
+    "chaos_tripwire_events": 0,
+    "cloud_cost_accounts": 4,
+    "collaborative_canvas_rooms": 3,
+    "compliance_auditor_sessions": 1,
+    "compliance_controls": 6,
+    "compliance_evidences": 6,
+    "compliance_export_jobs": 126,
+    "compliance_purge_certificates": 63,
+    "compliance_retention_policies": 5,
+    "conflict_resolution_policies": 4,
+    "connection_credentials": 43,
+    "connection_events": 86,
+    "connector_resources": 26,
+    "copilot_automation_plans": 0,
+    "cqrs_materialized_views": 3,
+    "cross_channel_repurposings": 570,
+    "custom_domain_access_logs": 1,
+    "custom_domains": 1,
+    "custom_roles_and_permissions": 68,
+    "customer_ltv_metrics": 1,
+    "customer_success_interventions": 2,
+    "database_shards": 3,
+    "db_archival_policies": 3,
+    "db_cold_tier_archives": 2,
+    "db_partition_configs": 4,
+    "db_partition_maintenance_logs": 91,
+    "distributed_convergence_logs": 83,
+    "distributed_locks": 0,
+    "distributed_transactions": 2,
+    "dlp_incidents": 5,
+    "dlp_policies": 4,
+    "dual_authorization_rules": 4,
+    "edge_cache_nodes": 6,
+    "edge_cache_rules": 4,
+    "edge_purge_logs": 124,
+    "edge_traffic_metrics": 24,
+    "email_verification_tokens": 28,
+    "enterprise_sso_configs": 2,
+    "enterprise_sso_login_audits": 1,
+    "entitlements": 708,
+    "envelope_data_encryption_keys": 5,
+    "ephemeral_credential_leases": 5,
+    "event_mesh_dead_letter_queue": 35,
+    "event_mesh_idempotency_keys": 1,
+    "event_mesh_subscriptions": 5,
+    "event_mesh_topics": 5,
+    "experiment_variants": 0,
+    "failover_quorum_events": 73,
+    "finops_rightsizing_recommendations": 3,
+    "governance_audit_logs": 2,
+    "gpu_transcode_nodes": 3,
+    "gpu_video_render_jobs": 3,
+    "growth_recommendations": 24,
+    "hsm_crypto_audit_logs": 9,
+    "hsm_key_rings": 5,
+    "hybrid_search_query_logs": 2,
+    "idempotent_usage_records": 8,
+    "immutable_object_locks": 2,
+    "incident_alert_channels": 67,
+    "incident_alert_events": 62,
+    "incident_alert_rules": 67,
+    "ingestion_audit_logs": 7213,
+    "jit_access_requests": 33,
+    "jit_audit_sessions": 5,
+    "key_derivation_policies": 3,
+    "marketing_objects": 7391,
+    "materialized_view_refresh_logs": 59,
+    "media_assets": 26,
+    "meta_connections": 5,
+    "meta_facebook_pages": 12,
+    "meta_instagram_accounts": 5,
+    "motion_composition_templates": 3,
+    "multi_master_nodes": 4,
+    "neural_embedding_models": 3,
+    "object_storage_lifecycle_rules": 3,
+    "operational_transformation_ops": 2,
+    "outbound_webhook_deliveries": 1,
+    "outbound_webhook_endpoints": 2,
+    "password_reset_tokens": 13,
+    "post_analytics_metrics": 124,
+    "post_analytics_snapshots": 49,
+    "post_variants": 355,
+    "posts": 144,
+    "presigned_upload_sessions": 1,
+    "provider_health_incidents": 71,
+    "publish_logs": 210,
+    "publishing_audit_logs": 65816,
+    "publishing_jobs": 93,
+    "query_federation_sources": 5,
+    "rag_knowledge_collections": 3,
+    "read_replica_clusters": 4,
+    "refresh_tokens": 557,
+    "rendered_video_artifacts": 2,
+    "replication_heartbeat_events": 41,
+    "replication_mesh_nodes": 5,
+    "saga_compensating_transactions": 4,
+    "saga_workflow_definitions": 5,
+    "scim_api_tokens": 3,
+    "scim_sync_logs": 556,
+    "secret_access_audit_logs": 3,
+    "secret_key_versions": 7,
+    "secret_vault_keys": 5,
+    "semantic_vector_embeddings": 3,
+    "semantic_vector_memories": 4,
+    "shard_rebalance_migrations": 1,
+    "shard_routing_ranges": 32,
+    "siem_delivery_logs": 2,
+    "siem_destinations": 2,
+    "social_accounts": 29,
+    "social_connections": 24,
+    "social_webhook_configs": 59,
+    "social_webhook_events": 369,
+    "social_webhook_replay_logs": 62,
+    "state_machine_instances": 4,
+    "storage_buckets": 3,
+    "subscription_plans": 9,
+    "superadmin_audit_logs": 8179,
+    "superadmin_impersonation_sessions": 71,
+    "system_backup_snapshots": 63,
+    "system_dr_drill_logs": 62,
+    "system_maintenance_windows": 114,
+    "system_sla_telemetry": 456,
+    "system_status_components": 8,
+    "system_status_incidents": 0,
+    "system_tenant_backup_exports": 61,
+    "template_versions": 0,
+    "templates": 1,
+    "tenant_churn_scores": 1,
+    "tenant_cost_attributions": 2,
+    "tenant_subscriptions": 88,
+    "tenant_usage_alerts": 15,
+    "tenant_usage_counters": 7,
+    "tenant_user_custom_roles": 0,
+    "tenant_user_permission_overrides": 0,
+    "tenant_users": 110,
+    "tenants": 96,
+    "usage_counters": 59,
+    "users": 148,
+    "vector_clock_states": 3,
+    "video_render_jobs": 14,
+    "viral_score_predictions": 0,
+    "workflow_step_executions": 14,
+    "workspace_invites": 7,
+    "worm_daily_seals": 62,
+    "worm_legal_holds": 55,
+    "worm_vault_records": 73997,
+    "worm_verification_events": 400,
+    "worm_verification_tokens": 50
+  },
+  "totalRouteFiles": 30,
+  "totalEndpointsAcrossFiles": 686,
+  "routeDetails": [
+    {
+      "file": "admin.routes.ts",
+      "endpointsCount": 0,
+      "sampleEndpoints": []
+    },
+    {
+      "file": "adminBilling.routes.ts",
+      "endpointsCount": 13,
+      "sampleEndpoints": [
+        ".get('/metrics'",
+        ".get('/revenue-history'",
+        ".get('/subscriptions'"
+      ]
+    },
+    {
+      "file": "agent.routes.ts",
+      "endpointsCount": 7,
+      "sampleEndpoints": [
+        ".post('/run'",
+        ".get('/runs'",
+        ".get('/runs/:id'"
+      ]
+    },
+    {
+      "file": "ai.routes.ts",
+      "endpointsCount": 4,
+      "sampleEndpoints": [
+        ".post('/generate-copy'",
+        ".post('/generate-content'",
+        ".post('/transform-copy'"
+      ]
+    },
+    {
+      "file": "analytics.routes.ts",
+      "endpointsCount": 12,
+      "sampleEndpoints": [
+        ".get('/overview'",
+        ".get('/posts/:postId'",
+        ".get('/export'"
+      ]
+    },
+    {
+      "file": "approval.routes.ts",
+      "endpointsCount": 2,
+      "sampleEndpoints": [
+        ".get('/magic/:token'",
+        ".post('/magic/:token/action'"
+      ]
+    },
+    {
+      "file": "auth.routes.ts",
+      "endpointsCount": 13,
+      "sampleEndpoints": [
+        ".post('/register'",
+        ".post('/login'",
+        ".post('/logout'"
+      ]
+    },
+    {
+      "file": "automation.routes.ts",
+      "endpointsCount": 25,
+      "sampleEndpoints": [
+        ".post('/webhook/:token'",
+        ".get('/health'",
+        ".get('/metrics'"
+      ]
+    },
+    {
+      "file": "billing.routes.ts",
+      "endpointsCount": 23,
+      "sampleEndpoints": [
+        ".post('/webhook'",
+        ".get('/plans'",
+        ".get('/usage'"
+      ]
+    },
+    {
+      "file": "brand.routes.ts",
+      "endpointsCount": 11,
+      "sampleEndpoints": [
+        ".get('/'",
+        ".post('/'",
+        ".get('/:brandId'"
+      ]
+    },
+    {
+      "file": "campaign.routes.ts",
+      "endpointsCount": 8,
+      "sampleEndpoints": [
+        ".get('/'",
+        ".post('/strategy'",
+        ".post('/generate'"
+      ]
+    },
+    {
+      "file": "connections.routes.ts",
+      "endpointsCount": 27,
+      "sampleEndpoints": [
+        ".get('/callback'",
+        ".get('/providers'",
+        ".get('/health'"
+      ]
+    },
+    {
+      "file": "data.routes.ts",
+      "endpointsCount": 13,
+      "sampleEndpoints": [
+        ".get('/objects'",
+        ".get('/objects/:id'",
+        ".post('/objects'"
+      ]
+    },
+    {
+      "file": "governance.routes.ts",
+      "endpointsCount": 14,
+      "sampleEndpoints": [
+        ".get('/settings'",
+        ".put('/settings'",
+        ".post('/autonomy-level'"
+      ]
+    },
+    {
+      "file": "growth.routes.ts",
+      "endpointsCount": 25,
+      "sampleEndpoints": [
+        ".get('/baselines'",
+        ".post('/baselines/recalculate'",
+        ".get('/recommendations'"
+      ]
+    },
+    {
+      "file": "health.routes.ts",
+      "endpointsCount": 3,
+      "sampleEndpoints": [
+        ".get('/health'",
+        ".get('/api/v1/health'",
+        ".post('/api/v1/internal/reset-rate-limits'"
+      ]
+    },
+    {
+      "file": "media.routes.ts",
+      "endpointsCount": 6,
+      "sampleEndpoints": [
+        ".get('/'",
+        ".post('/'",
+        ".patch('/:assetId'"
+      ]
+    },
+    {
+      "file": "meta.routes.ts",
+      "endpointsCount": 18,
+      "sampleEndpoints": [
+        ".get('/connect'",
+        ".get('/callback'",
+        ".get('/status'"
+      ]
+    },
+    {
+      "file": "post.routes.ts",
+      "endpointsCount": 13,
+      "sampleEndpoints": [
+        ".get('/'",
+        ".post('/'",
+        ".post('/batch-publish'"
+      ]
+    },
+    {
+      "file": "publishing.routes.ts",
+      "endpointsCount": 0,
+      "sampleEndpoints": []
+    },
+    {
+      "file": "scim.routes.ts",
+      "endpointsCount": 11,
+      "sampleEndpoints": [
+        ".get('/ServiceProviderConfig'",
+        ".get('/Schemas'",
+        ".get('/Schemas/:id'"
+      ]
+    },
+    {
+      "file": "socialAccount.routes.ts",
+      "endpointsCount": 8,
+      "sampleEndpoints": [
+        ".get('/'",
+        ".post('/'",
+        ".post('/sandbox/seed'"
+      ]
+    },
+    {
+      "file": "socialWebhook.routes.ts",
+      "endpointsCount": 6,
+      "sampleEndpoints": [
+        ".get('/meta'",
+        ".post('/meta'",
+        ".get('/instagram'"
+      ]
+    },
+    {
+      "file": "superadminOps.routes.ts",
+      "endpointsCount": 383,
+      "sampleEndpoints": [
+        ".get('/tenants'",
+        ".get('/tenants/:tenantId'",
+        ".post('/tenants/:tenantId/subscription'"
+      ]
+    },
+    {
+      "file": "template.routes.ts",
+      "endpointsCount": 14,
+      "sampleEndpoints": [
+        ".get('/preview'",
+        ".get('/'",
+        ".post('/'"
+      ]
+    },
+    {
+      "file": "tenant.routes.ts",
+      "endpointsCount": 0,
+      "sampleEndpoints": []
+    },
+    {
+      "file": "video.routes.ts",
+      "endpointsCount": 6,
+      "sampleEndpoints": [
+        ".get('/templates'",
+        ".post('/storyboard'",
+        ".post('/render'"
+      ]
+    },
+    {
+      "file": "whiteLabel.routes.ts",
+      "endpointsCount": 2,
+      "sampleEndpoints": [
+        ".get('/config'",
+        ".get('/validate-domain'"
+      ]
+    },
+    {
+      "file": "workspace.routes.ts",
+      "endpointsCount": 14,
+      "sampleEndpoints": [
+        ".post('/invites/accept'",
+        ".get('/'",
+        ".post('/'"
+      ]
+    },
+    {
+      "file": "wormVerify.routes.ts",
+      "endpointsCount": 5,
+      "sampleEndpoints": [
+        ".get('/public-key'",
+        ".get('/seals'",
+        ".get('/seals/:id/verify'"
+      ]
+    }
+  ],
+  "controllerFilesCount": 56,
+  "pageDirs": [
+    "ai",
+    "analytics",
+    "approvals",
+    "auth",
+    "automations",
+    "billing",
+    "brands",
+    "campaigns",
+    "connections",
+    "content",
+    "dashboard",
+    "data",
+    "public",
+    "settings",
+    "templates"
+  ],
+  "apiNamespaces": [
+    "headers",
+    "credentials",
+    "tokens",
+    "payload",
+    "background",
+    "settings",
+    "activeWorkspace",
+    "plan",
+    "stats",
+    "workspace",
+    "data",
+    "user",
+    "edits",
+    "params"
+  ]
+}

@@ -1,0 +1,432 @@
+version: '3.8'
+
+# =============================================================================
+# SocialForge: 100k-Concurrent-Ready Multi-Instance Production Scale Stack
+# 3x API Instances • 3x Worker Instances • HAProxy RDS Proxy • Redis • Mock Meta
+# =============================================================================
+
+networks:
+  socialforge-scale-net:
+    driver: bridge
+
+volumes:
+  mysqldata-scale:
+  redisdata-scale:
+  miniodata-scale:
+  uploadsdata-scale:
+
+services:
+  # ---------------------------------------------------------------------------
+  # 1. Primary MySQL 8.4 Database (Tuned for 4000 Max Connections & Strict UTC)
+  # ---------------------------------------------------------------------------
+  mysql-primary:
+    image: mysql:8.4
+    container_name: socialforge-scale-mysql
+    restart: unless-stopped
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --max_connections=4000
+      --default-time-zone=+00:00
+      --innodb_buffer_pool_size=1G
+      --innodb_lock_wait_timeout=10
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-socialforge_db}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
+    ports:
+      - "3309:3306"
+    volumes:
+      - mysqldata-scale:/var/lib/mysql
+    networks:
+      - socialforge-scale-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD:-root}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  # ---------------------------------------------------------------------------
+  # 2. Database Connection Multiplexer (Simulating AWS RDS Proxy)
+  # ---------------------------------------------------------------------------
+  db-proxy:
+    image: haproxy:2.8-alpine
+    container_name: socialforge-scale-dbproxy
+    restart: unless-stopped
+    volumes:
+      - ./tools/haproxy/db-proxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    ports:
+      - "3310:3306"
+    depends_on:
+      mysql-primary:
+        condition: service_healthy
+    networks:
+      - socialforge-scale-net
+
+  # ---------------------------------------------------------------------------
+  # 3. Redis 7.2 (Tuned for BullMQ Non-Eviction & Distributed Rate Limiting)
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7.2-alpine
+    container_name: socialforge-scale-redis
+    restart: unless-stopped
+    command: redis-server --maxmemory 512mb --maxmemory-policy noeviction --appendonly yes
+    ports:
+      - "6380:6379"
+    volumes:
+      - redisdata-scale:/data
+    networks:
+      - socialforge-scale-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # 4. Mock Meta Provider Gateway (Deterministic Zero-External Handshakes)
+  # ---------------------------------------------------------------------------
+  mock-meta:
+    build:
+      context: ./tools/mock-meta
+      dockerfile: Dockerfile
+    container_name: socialforge-scale-mock-meta
+    restart: unless-stopped
+    ports:
+      - "4005:4005"
+    networks:
+      - socialforge-scale-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4005/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # 5. MinIO S3 Media Storage
+  # ---------------------------------------------------------------------------
+  minio:
+    image: minio/minio:latest
+    container_name: socialforge-scale-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:-minio_admin}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:-minio_secure_password}
+    ports:
+      - "9002:9000"
+      - "9003:9001"
+    volumes:
+      - miniodata-scale:/data
+    networks:
+      - socialforge-scale-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # 6. API Fleet (3 Parallel Instances Behind Edge ALB)
+  # ---------------------------------------------------------------------------
+  api-1:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: socialforge-scale-api-1
+    restart: unless-stopped
+    command: sh -c "node apps/api/dist/db/migrate.js && node apps/api/dist/index.js"
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      INSTANCE_ID: api-1
+      WEB_APP_URL: ${WEB_APP_URL:-http://localhost}
+      # Connected through db-proxy (RDS Proxy)
+      DB_HOST: db-proxy
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: ${DB_PASSWORD:-root}
+      DB_NAME: ${DB_NAME:-socialforge_db}
+      DB_POOL_MIN: 5
+      DB_POOL_MAX: 30
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_URL: redis://redis:6379
+      USE_BULLMQ_PUBLISHING: "true"
+      META_GRAPH_API_BASE_URL: http://mock-meta:4005
+      S3_ENDPOINT: http://minio:9000
+      S3_BUCKET: ${S3_BUCKET:-socialforge-media}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-minio_admin}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-minio_secure_password}
+      JWT_SECRET: ${JWT_SECRET:-production_secure_jwt_secret_32_characters_long_!}
+      ENCRYPTION_MASTER_KEY: ${ENCRYPTION_MASTER_KEY:-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
+      META_APP_ID: sf_mock_app_id
+      META_APP_SECRET: sf_mock_app_secret
+      META_DEV_ACCESS_TOKEN: sf_mock_dev_token
+      META_TEST_MODE: "false"
+    volumes:
+      - uploadsdata-scale:/app/uploads
+    depends_on:
+      db-proxy:
+        condition: service_started
+      redis:
+        condition: service_healthy
+      mock-meta:
+        condition: service_healthy
+    networks:
+      - socialforge-scale-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 25s
+
+  api-2:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: socialforge-scale-api-2
+    restart: unless-stopped
+    command: node apps/api/dist/index.js
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      INSTANCE_ID: api-2
+      WEB_APP_URL: ${WEB_APP_URL:-http://localhost}
+      DB_HOST: db-proxy
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: ${DB_PASSWORD:-root}
+      DB_NAME: ${DB_NAME:-socialforge_db}
+      DB_POOL_MIN: 5
+      DB_POOL_MAX: 30
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_URL: redis://redis:6379
+      USE_BULLMQ_PUBLISHING: "true"
+      META_GRAPH_API_BASE_URL: http://mock-meta:4005
+      S3_ENDPOINT: http://minio:9000
+      S3_BUCKET: ${S3_BUCKET:-socialforge-media}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-minio_admin}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-minio_secure_password}
+      JWT_SECRET: ${JWT_SECRET:-production_secure_jwt_secret_32_characters_long_!}
+      ENCRYPTION_MASTER_KEY: ${ENCRYPTION_MASTER_KEY:-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
+      META_APP_ID: sf_mock_app_id
+      META_APP_SECRET: sf_mock_app_secret
+      META_DEV_ACCESS_TOKEN: sf_mock_dev_token
+      META_TEST_MODE: "false"
+    volumes:
+      - uploadsdata-scale:/app/uploads
+    depends_on:
+      api-1:
+        condition: service_healthy
+    networks:
+      - socialforge-scale-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  api-3:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: socialforge-scale-api-3
+    restart: unless-stopped
+    command: node apps/api/dist/index.js
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      INSTANCE_ID: api-3
+      WEB_APP_URL: ${WEB_APP_URL:-http://localhost}
+      DB_HOST: db-proxy
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: ${DB_PASSWORD:-root}
+      DB_NAME: ${DB_NAME:-socialforge_db}
+      DB_POOL_MIN: 5
+      DB_POOL_MAX: 30
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_URL: redis://redis:6379
+      USE_BULLMQ_PUBLISHING: "true"
+      META_GRAPH_API_BASE_URL: http://mock-meta:4005
+      S3_ENDPOINT: http://minio:9000
+      S3_BUCKET: ${S3_BUCKET:-socialforge-media}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-minio_admin}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-minio_secure_password}
+      JWT_SECRET: ${JWT_SECRET:-production_secure_jwt_secret_32_characters_long_!}
+      ENCRYPTION_MASTER_KEY: ${ENCRYPTION_MASTER_KEY:-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
+      META_APP_ID: sf_mock_app_id
+      META_APP_SECRET: sf_mock_app_secret
+      META_DEV_ACCESS_TOKEN: sf_mock_dev_token
+      META_TEST_MODE: "false"
+    volumes:
+      - uploadsdata-scale:/app/uploads
+    depends_on:
+      api-1:
+        condition: service_healthy
+    networks:
+      - socialforge-scale-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ---------------------------------------------------------------------------
+  # 7. Worker Fleet (3 Parallel BullMQ Workers Consuming queue-publish-dispatcher)
+  # ---------------------------------------------------------------------------
+  worker-1:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: socialforge-scale-worker-1
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      WORKER_ID: worker-1
+      DB_HOST: db-proxy
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: ${DB_PASSWORD:-root}
+      DB_NAME: ${DB_NAME:-socialforge_db}
+      DB_POOL_MIN: 5
+      DB_POOL_MAX: 20
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_URL: redis://redis:6379
+      USE_BULLMQ_PUBLISHING: "true"
+      PUBLISH_WORKER_CONCURRENCY: 20
+      META_GRAPH_API_BASE_URL: http://mock-meta:4005
+      S3_ENDPOINT: http://minio:9000
+      S3_BUCKET: ${S3_BUCKET:-socialforge-media}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-minio_admin}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-minio_secure_password}
+      ENCRYPTION_MASTER_KEY: ${ENCRYPTION_MASTER_KEY:-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
+      META_APP_ID: sf_mock_app_id
+      META_APP_SECRET: sf_mock_app_secret
+      META_DEV_ACCESS_TOKEN: sf_mock_dev_token
+      META_TEST_MODE: "false"
+    volumes:
+      - uploadsdata-scale:/app/uploads
+    depends_on:
+      api-1:
+        condition: service_healthy
+    networks:
+      - socialforge-scale-net
+
+  worker-2:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: socialforge-scale-worker-2
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      WORKER_ID: worker-2
+      DB_HOST: db-proxy
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: ${DB_PASSWORD:-root}
+      DB_NAME: ${DB_NAME:-socialforge_db}
+      DB_POOL_MIN: 5
+      DB_POOL_MAX: 20
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_URL: redis://redis:6379
+      USE_BULLMQ_PUBLISHING: "true"
+      PUBLISH_WORKER_CONCURRENCY: 20
+      META_GRAPH_API_BASE_URL: http://mock-meta:4005
+      S3_ENDPOINT: http://minio:9000
+      S3_BUCKET: ${S3_BUCKET:-socialforge-media}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-minio_admin}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-minio_secure_password}
+      ENCRYPTION_MASTER_KEY: ${ENCRYPTION_MASTER_KEY:-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
+      META_APP_ID: sf_mock_app_id
+      META_APP_SECRET: sf_mock_app_secret
+      META_DEV_ACCESS_TOKEN: sf_mock_dev_token
+      META_TEST_MODE: "false"
+    volumes:
+      - uploadsdata-scale:/app/uploads
+    depends_on:
+      api-1:
+        condition: service_healthy
+    networks:
+      - socialforge-scale-net
+
+  worker-3:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: socialforge-scale-worker-3
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      WORKER_ID: worker-3
+      DB_HOST: db-proxy
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: ${DB_PASSWORD:-root}
+      DB_NAME: ${DB_NAME:-socialforge_db}
+      DB_POOL_MIN: 5
+      DB_POOL_MAX: 20
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_URL: redis://redis:6379
+      USE_BULLMQ_PUBLISHING: "true"
+      PUBLISH_WORKER_CONCURRENCY: 20
+      META_GRAPH_API_BASE_URL: http://mock-meta:4005
+      S3_ENDPOINT: http://minio:9000
+      S3_BUCKET: ${S3_BUCKET:-socialforge-media}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-minio_admin}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-minio_secure_password}
+      ENCRYPTION_MASTER_KEY: ${ENCRYPTION_MASTER_KEY:-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
+      META_APP_ID: sf_mock_app_id
+      META_APP_SECRET: sf_mock_app_secret
+      META_DEV_ACCESS_TOKEN: sf_mock_dev_token
+      META_TEST_MODE: "false"
+    volumes:
+      - uploadsdata-scale:/app/uploads
+    depends_on:
+      api-1:
+        condition: service_healthy
+    networks:
+      - socialforge-scale-net
+
+  # ---------------------------------------------------------------------------
+  # 8. Edge ALB & Reverse Proxy (Distributing Across api-1, api-2, api-3 & Web)
+  # ---------------------------------------------------------------------------
+  edge-alb:
+    image: haproxy:2.8-alpine
+    container_name: socialforge-scale-alb
+    restart: unless-stopped
+    volumes:
+      - ./tools/haproxy/edge-alb.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    ports:
+      - "8080:80"
+    depends_on:
+      api-1:
+        condition: service_healthy
+      api-2:
+        condition: service_healthy
+      api-3:
+        condition: service_healthy
+    networks:
+      - socialforge-scale-net
+
+  # ---------------------------------------------------------------------------
+  # 9. Frontend Web SPA
+  # ---------------------------------------------------------------------------
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    container_name: socialforge-scale-web
+    restart: unless-stopped
+    depends_on:
+      api-1:
+        condition: service_healthy
+    networks:
+      - socialforge-scale-net

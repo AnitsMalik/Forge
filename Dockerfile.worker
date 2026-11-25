@@ -1,0 +1,68 @@
+# Production Dockerfile for SocialForge BullMQ Worker + FFmpeg Engine
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Install compilation dependencies
+RUN apk add --no-cache python3 make g++
+
+COPY package.json package-lock.json ./
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/database/package.json ./packages/database/
+COPY packages/ai/package.json ./packages/ai/
+COPY packages/config/package.json ./packages/config/
+COPY packages/templates/package.json ./packages/templates/
+COPY apps/api/package.json ./apps/api/
+COPY apps/worker/package.json ./apps/worker/
+COPY apps/web/package.json ./apps/web/
+
+RUN npm ci
+
+COPY tsconfig.json ./
+COPY packages/shared ./packages/shared
+COPY apps/worker ./apps/worker
+
+RUN npm run build --workspace=@socialforge/shared
+RUN npm run build --workspace=@socialforge/worker
+
+# Runner Stage
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# Install native FFmpeg runtime, fontconfig, and open-source system fonts
+RUN apk add --no-cache \
+  ffmpeg \
+  fontconfig \
+  ttf-dejavu \
+  ttf-freefont \
+  procps \
+  curl
+
+COPY package.json package-lock.json ./
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/database/package.json ./packages/database/
+COPY packages/ai/package.json ./packages/ai/
+COPY packages/config/package.json ./packages/config/
+COPY packages/templates/package.json ./packages/templates/
+COPY apps/api/package.json ./apps/api/
+COPY apps/worker/package.json ./apps/worker/
+COPY apps/web/package.json ./apps/web/
+
+RUN npm ci --omit=dev --workspace=@socialforge/shared --workspace=@socialforge/worker
+
+COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
+COPY --from=builder /app/apps/worker/dist ./apps/worker/dist
+
+# Scratch directory for FFmpeg intermediate video processing and configure non-root ownership
+RUN mkdir -p /app/uploads/video-renders/scratch /app/uploads/video-renders/output \
+  && chown -R node:node /app
+
+USER node
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD pgrep -f "node apps/worker/dist/index.js" > /dev/null || exit 1
+
+CMD ["node", "apps/worker/dist/index.js"]

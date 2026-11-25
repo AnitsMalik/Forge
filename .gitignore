@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Environment variables & secrets
+.env
+.env.production
+.env.local
+.env.*.local
+.env.*
+!.env.example
+!.env.production.template
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Build outputs & binaries
+dist/
+build/
+.turbo/
+*.exe
+*.dll
+*.pdb
+tools/redis/
+
+# Media scratch, archives, temporary files
+tmp/
+temp/
+scratch/
+uploads/
+backups/
+audit_screenshots/
+playwright-report/
+test-results/
+*.zip
+*.tar.gz
+
+# OS files
+.DS_Store
+Thumbs.db

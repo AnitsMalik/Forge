@@ -1,0 +1,113 @@
+name: HoaspForge CI & Security Verification
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-verify:
+    name: Build, Lint & Automated Test Matrix
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: socialforge_db
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3308:3306
+        options: --health-cmd="mysqladmin ping -proot" --health-interval=10s --health-timeout=5s --health-retries=5
+
+      redis:
+        image: redis:7.2-alpine
+        ports:
+          - 6379:6379
+        options: --health-cmd="redis-cli ping" --health-interval=5s --health-timeout=5s --health-retries=5
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install System Dependencies (FFmpeg & Fonts)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-dejavu-core fontconfig
+
+      - name: Install Monorepo NPM Dependencies
+        run: npm ci
+
+      - name: Build Monorepo Workspaces
+        run: npm run build
+
+      - name: Run Database Migrations & Seeds
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3308
+          DB_USER: root
+          DB_PASSWORD: root
+          DB_NAME: socialforge_db
+        run: |
+          npm run db:migrate --workspace=@socialforge/api
+          npm run db:seed --workspace=@socialforge/api
+
+      - name: Launch SocialForge API Server
+        env:
+          NODE_ENV: test
+          PORT: 4000
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3308
+          DB_USER: root
+          DB_PASSWORD: root
+          DB_NAME: socialforge_db
+          JWT_SECRET: super_jwt_secret_dev_key_32_bytes_long!
+          ENCRYPTION_MASTER_KEY: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+        run: |
+          node apps/api/dist/index.js &
+          sleep 4
+
+      - name: Verify Multi-Tenant Isolation & Security Headers (Phase 10)
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3308
+          DB_USER: root
+          DB_PASSWORD: root
+          DB_NAME: socialforge_db
+        run: npx tsx apps/api/test_multi_tenant_isolation.mjs
+
+      - name: Verify Analytics Ingestion & Reporting Engine (Phase 9)
+        run: node apps/worker/test_analytics_pipeline.mjs
+
+      - name: Verify FFmpeg 9:16 Video Composition Pipeline (Phase 8)
+        run: node apps/worker/test_video_pipeline.mjs
+
+      - name: Verify Production Packaging & Docker Deployment Assets
+        run: npm run package:prod
+
+      - name: Execute CI/CD Production Smoke Test Suite (v6.9.0)
+        env:
+          API_BASE_URL: http://127.0.0.1:4000
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3308
+          DB_USER: root
+          DB_PASSWORD: root
+          DB_NAME: socialforge_db
+        run: npm run test:smoke
+
+      - name: Verify Permanent Production Meta Publication Lock
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3308
+          DB_USER: root
+          DB_PASSWORD: root
+          DB_NAME: socialforge_db
+        run: npm run test:meta-lock
+

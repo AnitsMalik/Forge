@@ -1,0 +1,1134 @@
+/* ==========================================================================
+   SOCIALFORGE CONTENT STUDIO & COMPOSER — SENIOR UI/UX DESIGN SYSTEM
+   Linear & Stripe inspired design system: High-fidelity typography,
+   glassmorphism depth, authentic mobile device previews, and guided workflows.
+   ========================================================================== */
+
+:root {
+  --cs-radius-sm: 8px;
+  --cs-radius-md: 12px;
+  --cs-radius-lg: 16px;
+  --cs-radius-xl: 24px;
+  --cs-transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --cs-shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+  --cs-shadow-elevated: 0 12px 32px -4px rgba(0, 0, 0, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.04);
+  --cs-shadow-glow: 0 0 24px rgba(139, 92, 246, 0.18);
+}
+
+.cs-studio-container {
+  max-width: 1520px;
+  margin: 0 auto;
+  padding: 20px 24px 80px;
+  color: var(--text-primary);
+  font-family: var(--font-body, system-ui, -apple-system, sans-serif);
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   1. COMMAND BAR HEADER & WORKSPACE STATUS
+   -------------------------------------------------------------------------- */
+.cs-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.cs-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.cs-brand-avatar-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--cs-radius-md);
+  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.15rem;
+  font-family: var(--font-heading);
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.28);
+  letter-spacing: -0.02em;
+}
+
+.cs-header-title h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  margin: 0 0 4px 0;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  line-height: 1.2;
+}
+
+.cs-header-subtitle {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cs-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cs-tool-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: var(--cs-radius-sm);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--cs-transition);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.cs-tool-btn:hover {
+  background: var(--bg-surface-elevated);
+  border-color: var(--accent-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+}
+
+/* --------------------------------------------------------------------------
+   2. GUIDED 5-STAGE WORKFLOW STEPPER
+   -------------------------------------------------------------------------- */
+.cs-stepper-wrap {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--cs-radius-md, 12px);
+  padding: 4px 6px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow-x: auto;
+  gap: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  scrollbar-width: none;
+}
+
+.cs-stepper-wrap::-webkit-scrollbar {
+  display: none;
+}
+
+.cs-step-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  flex: 1;
+  justify-content: center;
+}
+
+.cs-step-icon {
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.cs-step-btn:hover .cs-step-icon {
+  transform: scale(1.15);
+}
+
+.cs-step-num {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--border-medium);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 800;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+/* Distinct colorful accents for each 5-stage workflow step */
+/* Stage 1: Amber / Idea & Brief */
+.cs-step-btn.step-1:hover {
+  background: rgba(245, 158, 11, 0.08);
+  color: #f59e0b;
+}
+
+.cs-step-btn.step-1.active {
+  background: rgba(245, 158, 11, 0.14) !important;
+  border-color: rgba(245, 158, 11, 0.45) !important;
+  color: #d97706 !important;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.18) !important;
+}
+
+.cs-step-btn.step-1.active .cs-step-num {
+  background: #f59e0b !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.6) !important;
+}
+
+/* Stage 2: Violet / AI Copywriter */
+.cs-step-btn.step-2:hover {
+  background: rgba(139, 92, 246, 0.08);
+  color: #8b5cf6;
+}
+
+.cs-step-btn.step-2.active {
+  background: rgba(139, 92, 246, 0.14) !important;
+  border-color: rgba(139, 92, 246, 0.45) !important;
+  color: #7c3aed !important;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.18) !important;
+}
+
+.cs-step-btn.step-2.active .cs-step-num {
+  background: #8b5cf6 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.6) !important;
+}
+
+/* Stage 3: Cyan / Multichannel */
+.cs-step-btn.step-3:hover {
+  background: rgba(6, 182, 212, 0.08);
+  color: #06b6d4;
+}
+
+.cs-step-btn.step-3.active {
+  background: rgba(6, 182, 212, 0.14) !important;
+  border-color: rgba(6, 182, 212, 0.45) !important;
+  color: #0891b2 !important;
+  box-shadow: 0 2px 8px rgba(6, 182, 212, 0.18) !important;
+}
+
+.cs-step-btn.step-3.active .cs-step-num {
+  background: #06b6d4 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 8px rgba(6, 182, 212, 0.6) !important;
+}
+
+/* Stage 4: Pink / Visuals & Media */
+.cs-step-btn.step-4:hover {
+  background: rgba(236, 72, 153, 0.08);
+  color: #ec4899;
+}
+
+.cs-step-btn.step-4.active {
+  background: rgba(236, 72, 153, 0.14) !important;
+  border-color: rgba(236, 72, 153, 0.45) !important;
+  color: #db2777 !important;
+  box-shadow: 0 2px 8px rgba(236, 72, 153, 0.18) !important;
+}
+
+.cs-step-btn.step-4.active .cs-step-num {
+  background: #ec4899 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 8px rgba(236, 72, 153, 0.6) !important;
+}
+
+/* Stage 5: Emerald / Review & Schedule */
+.cs-step-btn.step-5:hover {
+  background: rgba(16, 185, 129, 0.08);
+  color: #10b981;
+}
+
+.cs-step-btn.step-5.active {
+  background: rgba(16, 185, 129, 0.14) !important;
+  border-color: rgba(16, 185, 129, 0.45) !important;
+  color: #059669 !important;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.18) !important;
+}
+
+.cs-step-btn.step-5.active .cs-step-num {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.6) !important;
+}
+
+.cs-step-btn.completed .cs-step-num {
+  background: #10b981 !important;
+  color: #ffffff !important;
+}
+
+.cs-stepper-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  border-radius: 6px;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.cs-stepper-toggle:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-primary);
+}
+
+/* --------------------------------------------------------------------------
+   3. 2-COLUMN WORKSPACE GRID (55% EDITOR / 45% STICKY PREVIEW)
+   -------------------------------------------------------------------------- */
+.cs-workspace-grid {
+  display: grid;
+  grid-template-columns: 55% 45%;
+  gap: 26px;
+  align-items: flex-start;
+}
+
+/* --------------------------------------------------------------------------
+   4. LEFT COLUMN: STAGE CARDS & COMPOSER
+   -------------------------------------------------------------------------- */
+.cs-editor-column {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.cs-stage-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--cs-radius-lg);
+  padding: 24px;
+  position: relative;
+  transition: var(--cs-transition);
+  box-shadow: var(--cs-shadow-card);
+}
+
+.cs-stage-card:focus-within,
+.cs-stage-card.is-active {
+  border-color: rgba(139, 92, 246, 0.45);
+  box-shadow: var(--cs-shadow-elevated), var(--cs-shadow-glow);
+}
+
+.cs-stage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.cs-stage-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cs-stage-badge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(139, 92, 246, 0.12);
+  color: var(--accent-primary);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+}
+
+.cs-stage-title {
+  font-size: 1.05rem;
+  font-weight: 750;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.015em;
+}
+
+.cs-stage-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 3px 0 0 0;
+  line-height: 1.4;
+}
+
+/* Prompt Chips */
+.cs-prompt-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--cs-transition);
+  white-space: nowrap;
+}
+
+.cs-prompt-chip:hover {
+  background: rgba(139, 92, 246, 0.12);
+  color: var(--accent-primary);
+  border-color: rgba(139, 92, 246, 0.35);
+  transform: translateY(-1px);
+}
+
+/* Channel Customization Tabs - Compact & Colorful */
+.cs-channel-tabs-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg-surface-elevated);
+  padding: 3px 4px;
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle);
+  margin-bottom: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.cs-channel-tabs-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.cs-channel-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 7px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.cs-channel-tab:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Distinct platform brand colors for Channel Tabs */
+.cs-channel-tab.channel-facebook:hover {
+  background: rgba(24, 119, 242, 0.08);
+  color: #1877f2;
+}
+
+.cs-channel-tab.channel-facebook.active {
+  background: rgba(24, 119, 242, 0.14) !important;
+  border-color: rgba(24, 119, 242, 0.45) !important;
+  color: #1877f2 !important;
+  box-shadow: 0 2px 8px rgba(24, 119, 242, 0.18) !important;
+  font-weight: 700;
+}
+
+.cs-channel-tab.channel-instagram:hover {
+  background: rgba(225, 48, 108, 0.08);
+  color: #e1306c;
+}
+
+.cs-channel-tab.channel-instagram.active {
+  background: linear-gradient(135deg, rgba(245, 133, 41, 0.12), rgba(221, 42, 123, 0.16), rgba(129, 52, 175, 0.14)) !important;
+  border-color: rgba(225, 48, 108, 0.45) !important;
+  color: #d62976 !important;
+  box-shadow: 0 2px 8px rgba(225, 48, 108, 0.18) !important;
+  font-weight: 700;
+}
+
+.cs-channel-tab.channel-x_twitter:hover {
+  background: rgba(14, 165, 233, 0.08);
+  color: #0284c7;
+}
+
+.cs-channel-tab.channel-x_twitter.active {
+  background: rgba(14, 165, 233, 0.14) !important;
+  border-color: rgba(14, 165, 233, 0.45) !important;
+  color: #0284c7 !important;
+  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.18) !important;
+  font-weight: 700;
+}
+
+.cs-channel-tab.channel-linkedin:hover {
+  background: rgba(10, 102, 194, 0.08);
+  color: #0a66c2;
+}
+
+.cs-channel-tab.channel-linkedin.active {
+  background: rgba(10, 102, 194, 0.14) !important;
+  border-color: rgba(10, 102, 194, 0.45) !important;
+  color: #0a66c2 !important;
+  box-shadow: 0 2px 8px rgba(10, 102, 194, 0.18) !important;
+  font-weight: 700;
+}
+
+.cs-channel-tab.channel-tiktok:hover {
+  background: rgba(255, 0, 80, 0.08);
+  color: #ff0050;
+}
+
+.cs-channel-tab.channel-tiktok.active {
+  background: rgba(255, 0, 80, 0.14) !important;
+  border-color: rgba(255, 0, 80, 0.45) !important;
+  color: #ff0050 !important;
+  box-shadow: 0 2px 8px rgba(255, 0, 80, 0.18) !important;
+  font-weight: 700;
+}
+
+.cs-char-counter-pill {
+  font-size: 0.65rem;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+/* Textarea & Editor Area */
+.cs-textarea-wrap {
+  position: relative;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--cs-radius-md);
+  background: var(--bg-surface-elevated);
+  transition: var(--cs-transition);
+}
+
+.cs-textarea-wrap:focus-within {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
+}
+
+.cs-post-textarea {
+  width: 100%;
+  min-height: 150px;
+  padding: 16px;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  resize: vertical;
+  outline: none;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.cs-textarea-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-top: 1px solid var(--border-subtle);
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 0 0 var(--cs-radius-md) var(--cs-radius-md);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* AI Quick Actions Bar */
+.cs-ai-actions-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.cs-ai-action-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--cs-radius-sm);
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--cs-transition);
+}
+
+.cs-ai-action-chip:hover {
+  background: rgba(139, 92, 246, 0.12);
+  color: var(--accent-primary);
+  border-color: rgba(139, 92, 246, 0.35);
+  transform: translateY(-1px);
+}
+
+/* 4 Creative Studio Actions Grid */
+.cs-creative-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.cs-creative-action-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--cs-radius-md);
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: var(--cs-transition);
+  text-align: left;
+  width: 100%;
+  box-sizing: border-box;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.cs-creative-action-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(139, 92, 246, 0.45);
+  box-shadow: 0 6px 18px rgba(139, 92, 246, 0.12);
+}
+
+.cs-creative-action-card.featured {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(236, 72, 153, 0.08) 100%);
+  border-color: rgba(139, 92, 246, 0.35);
+}
+
+.cs-creative-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--cs-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Media Attachment Section */
+.cs-media-attachment-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: var(--cs-radius-md);
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  margin-top: 14px;
+}
+
+.cs-media-preview-thumb {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--cs-radius-sm);
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* --------------------------------------------------------------------------
+   5. RIGHT COLUMN: REAL-TIME PLATFORM PREVIEW
+   -------------------------------------------------------------------------- */
+.cs-preview-column {
+  position: sticky;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cs-preview-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--cs-radius-lg);
+  padding: 18px 20px 24px;
+  box-shadow: var(--cs-shadow-card);
+}
+
+.cs-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.cs-preview-platform-pills {
+  display: flex;
+  gap: 3px;
+  background: var(--bg-surface-elevated);
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+}
+
+.cs-preview-platform-pill {
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.70rem;
+  font-weight: 600;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cs-preview-platform-pill:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.cs-preview-platform-pill.preview-pill-facebook.active {
+  background: rgba(24, 119, 242, 0.14) !important;
+  color: #1877f2 !important;
+  border-color: rgba(24, 119, 242, 0.45) !important;
+  font-weight: 700;
+}
+
+.cs-preview-platform-pill.preview-pill-instagram.active {
+  background: linear-gradient(135deg, rgba(245, 133, 41, 0.12), rgba(221, 42, 123, 0.16), rgba(129, 52, 175, 0.14)) !important;
+  color: #d62976 !important;
+  border-color: rgba(225, 48, 108, 0.45) !important;
+  font-weight: 700;
+}
+
+.cs-preview-platform-pill.preview-pill-x_twitter.active {
+  background: rgba(14, 165, 233, 0.14) !important;
+  color: #0284c7 !important;
+  border-color: rgba(14, 165, 233, 0.45) !important;
+  font-weight: 700;
+}
+
+.cs-preview-platform-pill.preview-pill-linkedin.active {
+  background: rgba(10, 102, 194, 0.14) !important;
+  color: #0a66c2 !important;
+  border-color: rgba(10, 102, 194, 0.45) !important;
+  font-weight: 700;
+}
+
+.cs-preview-platform-pill.preview-pill-tiktok.active {
+  background: rgba(255, 0, 80, 0.14) !important;
+  color: #ff0050 !important;
+  border-color: rgba(255, 0, 80, 0.45) !important;
+  font-weight: 700;
+}
+
+.cs-preview-platform-pill.preview-pill-youtube.active {
+  background: rgba(255, 0, 0, 0.14) !important;
+  color: #ef4444 !important;
+  border-color: rgba(239, 68, 68, 0.45) !important;
+  font-weight: 700;
+}
+
+.cs-preview-platform-pill.preview-pill-pinterest.active {
+  background: rgba(230, 0, 35, 0.14) !important;
+  color: #e60023 !important;
+  border-color: rgba(230, 0, 35, 0.45) !important;
+  font-weight: 700;
+}
+
+/* Authentic Smartphone Device Mockup Frame */
+.cs-device-frame {
+  background: var(--bg-surface);
+  border: 2px solid var(--border-medium);
+  border-radius: var(--cs-radius-xl);
+  overflow: hidden;
+  box-shadow: 0 18px 42px -10px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  position: relative;
+  max-width: 440px;
+  margin: 0 auto;
+  transition: var(--cs-transition);
+}
+
+.cs-device-author-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+}
+
+.cs-device-media-stage {
+  position: relative;
+  width: 100%;
+  min-height: 240px;
+  max-height: 380px;
+  background: #070a12;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.cs-media-empty-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 36px 20px;
+  text-align: center;
+  width: 100%;
+  min-height: 220px;
+  background: var(--bg-surface-elevated);
+}
+
+.cs-device-engagement-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: 0.74rem;
+}
+
+.cs-device-caption-box {
+  padding: 14px 16px;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: var(--text-primary);
+  max-height: 160px;
+  overflow-y: auto;
+  background: var(--bg-surface);
+  word-break: break-word;
+}
+
+/* Interactive Click-to-Edit Live Feed Preview Elements */
+.cs-preview-edit-text-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  font-size: 0.74rem;
+  font-weight: 750;
+  border-radius: 6px;
+  background: var(--gradient-brand);
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 6px rgba(139, 92, 246, 0.3);
+}
+
+.cs-preview-edit-text-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.45);
+  filter: brightness(1.08);
+}
+
+.cs-device-caption-interactive {
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+  border: 1px dashed rgba(139, 92, 246, 0.25);
+  border-radius: 8px;
+  margin: 6px 8px 10px;
+}
+
+.cs-device-caption-interactive:hover {
+  border-color: var(--accent-primary);
+  background: rgba(139, 92, 246, 0.06) !important;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.15);
+}
+
+.cs-device-caption-edit-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 10px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 750;
+  color: var(--accent-primary);
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  transition: all 0.18s ease;
+}
+
+.cs-device-caption-interactive:hover .cs-device-caption-edit-badge {
+  background: var(--accent-primary);
+  color: #ffffff;
+  border-color: var(--accent-primary);
+  transform: scale(1.02);
+}
+
+@keyframes cs-textarea-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7);
+    border-color: var(--accent-primary);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(139, 92, 246, 0);
+    border-color: #a855f7;
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+    border-color: var(--accent-primary);
+  }
+}
+
+.cs-textarea-highlight-pulse {
+  animation: cs-textarea-glow 1.5s ease-out 2 !important;
+}
+
+/* Pre-Flight Readiness Summary Card */
+.cs-preflight-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  border-radius: var(--cs-radius-md);
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  margin-top: 16px;
+}
+
+/* --------------------------------------------------------------------------
+   6. UNIFIED BOTTOM FLOATING ACTION DOCK
+   -------------------------------------------------------------------------- */
+.cs-action-dock {
+  position: sticky;
+  bottom: 18px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  box-shadow: 0 16px 48px -8px rgba(0, 0, 0, 0.28), 0 0 16px rgba(139, 92, 246, 0.12);
+  border-radius: var(--cs-radius-lg);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  z-index: 100;
+  margin-top: 28px;
+  flex-wrap: wrap;
+  backdrop-filter: blur(16px);
+}
+
+.cs-action-dock-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.cs-action-dock-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* --------------------------------------------------------------------------
+   7. THEME OVERRIDES & HIGH CONTRAST POLISH
+   -------------------------------------------------------------------------- */
+[data-theme="light"] .cs-studio-container {
+  color: #0f172a;
+}
+
+[data-theme="light"] .cs-stage-card,
+[data-theme="light"] .cs-preview-card,
+[data-theme="light"] .cs-stepper-wrap {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05) !important;
+}
+
+[data-theme="light"] .cs-stage-title,
+[data-theme="light"] .cs-header-title h1 {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .cs-stage-desc,
+[data-theme="light"] .cs-header-subtitle {
+  color: #475569 !important;
+}
+
+[data-theme="light"] .cs-textarea-wrap {
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+}
+
+[data-theme="light"] .cs-post-textarea {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .cs-creative-action-card {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+}
+
+[data-theme="light"] .cs-creative-action-card:hover {
+  background: #ffffff !important;
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 6px 18px rgba(139, 92, 246, 0.15) !important;
+}
+
+[data-theme="light"] .cs-device-frame {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 16px 40px -8px rgba(15, 23, 42, 0.16) !important;
+}
+
+[data-theme="light"] .cs-device-author-bar,
+[data-theme="light"] .cs-device-engagement-bar,
+[data-theme="light"] .cs-device-caption-box {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .cs-action-dock {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 16px 48px -8px rgba(15, 23, 42, 0.18), 0 0 16px rgba(139, 92, 246, 0.1) !important;
+}
+
+/* --------------------------------------------------------------------------
+   8. RESPONSIVE DESIGN BREAKPOINTS
+   -------------------------------------------------------------------------- */
+@media (max-width: 1100px) {
+  .cs-workspace-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cs-preview-column {
+    position: static;
+  }
+
+  .cs-creative-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .cs-studio-container {
+    padding: 14px 12px 90px;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .cs-header-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .cs-header-left {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .cs-header-title {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .cs-header-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .cs-tool-btn {
+    justify-content: center;
+    padding: 6px 8px;
+    font-size: 0.74rem;
+  }
+
+  .cs-creative-actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cs-channel-tabs-bar {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .cs-action-dock {
+    flex-direction: column;
+    align-items: stretch;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 0;
+    margin: 0;
+    padding: 12px 16px;
+    background: var(--bg-surface);
+  }
+
+  .cs-action-dock-left,
+  .cs-action-dock-right {
+    justify-content: space-between;
+    width: 100%;
+  }
+}
+
+/* Dark theme vibrancy fine-tuning for compact & colorful tabs */
+[data-theme="dark"] .cs-step-btn.step-1.active {
+  color: #fbbf24 !important;
+}
+
+[data-theme="dark"] .cs-step-btn.step-2.active {
+  color: #a78bfa !important;
+}
+
+[data-theme="dark"] .cs-step-btn.step-3.active {
+  color: #22d3ee !important;
+}
+
+[data-theme="dark"] .cs-step-btn.step-4.active {
+  color: #f472b6 !important;
+}
+
+[data-theme="dark"] .cs-step-btn.step-5.active {
+  color: #34d399 !important;
+}
+
+[data-theme="dark"] .cs-channel-tab.channel-facebook.active {
+  color: #38bdf8 !important;
+}
+
+[data-theme="dark"] .cs-channel-tab.channel-instagram.active {
+  color: #fb7185 !important;
+}
+
+[data-theme="dark"] .cs-channel-tab.channel-x_twitter.active {
+  color: #38bdf8 !important;
+}
+
+[data-theme="dark"] .cs-channel-tab.channel-linkedin.active {
+  color: #60a5fa !important;
+}
+
+[data-theme="dark"] .cs-channel-tab.channel-tiktok.active {
+  color: #ff4d79 !important;
+}

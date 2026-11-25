@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SocialForge — High-Level Design (HLD) Document v2.0</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        darkMode: true,
+        background: '#0d111c',
+        primaryColor: '#8b5cf6',
+        primaryBorderColor: '#a78bfa',
+        primaryTextColor: '#ffffff',
+        lineColor: '#38bdf8',
+        secondaryColor: '#ec4899',
+        tertiaryColor: '#1e293b'
+      }
+    });
+  </script>
+  <style>
+    :root {
+      --bg-primary: #0a0d14;
+      --bg-card: #0f172a;
+      --bg-surface: #1e293b;
+      --border-color: #334155;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-primary: #8b5cf6;
+      --accent-secondary: #ec4899;
+      --accent-success: #10b981;
+      --accent-info: #0ea5e9;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.65;
+      padding: 0 0 80px 0;
+    }
+
+    /* Top Floating Toolbar */
+    .top-toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .toolbar-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-primary) 0%, #7c3aed 100%);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+    }
+    .btn-primary:hover { opacity: 0.92; transform: translateY(-1px); }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: var(--border-color);
+      color: var(--text-primary);
+    }
+    .btn-secondary:hover { background: rgba(255, 255, 255, 0.12); }
+
+    /* Main Container */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    /* Header Banner */
+    .doc-header {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.18) 0%, rgba(236, 72, 153, 0.1) 100%);
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      border-radius: 14px;
+      padding: 38px;
+      margin-bottom: 40px;
+    }
+
+    .doc-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 12px;
+      background: rgba(139, 92, 246, 0.25);
+      border: 1px solid var(--accent-primary);
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #c4b5fd;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: 2.3rem;
+      font-weight: 800;
+      line-height: 1.25;
+      margin-bottom: 12px;
+      color: #ffffff;
+    }
+
+    .doc-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .doc-meta-item strong {
+      color: var(--text-primary);
+    }
+
+    /* Section Typography */
+    h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-top: 50px;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-top: 30px;
+      margin-bottom: 12px;
+    }
+
+    p {
+      margin-bottom: 16px;
+      color: var(--text-secondary);
+      font-size: 0.96rem;
+    }
+
+    /* Glass Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Mermaid Wrapper */
+    .mermaid-wrapper {
+      background: #080c14;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 24px;
+      margin: 20px 0;
+      overflow-x: auto;
+      text-align: center;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 0.88rem;
+    }
+
+    th, td {
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background: rgba(30, 41, 59, 0.7);
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    td {
+      color: var(--text-secondary);
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    code {
+      font-family: var(--font-mono);
+      background: rgba(255, 255, 255, 0.08);
+      color: #38bdf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+
+    ul, ol {
+      margin-left: 24px;
+      margin-bottom: 18px;
+      color: var(--text-secondary);
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    .badge-pill {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(139, 92, 246, 0.2);
+      color: #c4b5fd;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+
+    .callout {
+      border-left: 4px solid var(--accent-primary);
+      background: rgba(139, 92, 246, 0.08);
+      padding: 16px 20px;
+      border-radius: 0 8px 8px 0;
+      margin: 20px 0;
+    }
+
+    @media print {
+      body { background: #ffffff; color: #000000; padding: 0; }
+      .top-toolbar { display: none; }
+      .container { max-width: 100%; padding: 0; }
+      .doc-header { background: #f8fafc; border-color: #cbd5e1; }
+      h1, h2, h3 { color: #0f172a; }
+      p, td, li { color: #334155; }
+      .card { background: #ffffff; border-color: #cbd5e1; box-shadow: none; }
+      .mermaid-wrapper { background: #f8fafc; border-color: #cbd5e1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Sticky Toolbar -->
+  <div class="top-toolbar">
+    <div class="toolbar-title">
+      <span style="color: var(--accent-primary);">⚡</span>
+      <span>SocialForge — High-Level Design (HLD) Document</span>
+      <span class="badge-pill">v2.0.0 Approved</span>
+    </div>
+    <div class="toolbar-actions">
+      <button class="btn btn-secondary" onclick="window.print()">🖨️ Print / Export PDF</button>
+      <a href="./HLD.md" class="btn btn-primary">📄 View Raw Markdown</a>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- Header Section -->
+    <header class="doc-header">
+      <div class="doc-badge">Enterprise Architectural Specification</div>
+      <h1>SocialForge — High-Level Design (HLD) Document</h1>
+      <p style="font-size: 1.1rem; color: #cbd5e1; margin-bottom: 0;">
+        Multi-Tenant Autonomous AI Social Media & Marketing Orchestration Platform with Multimodal Generation, 16-Dimension Brand Brain, and Commercial SaaS Monetization Engine.
+      </p>
+      <div class="doc-meta">
+        <div class="doc-meta-item">Version: <strong>2.0.0</strong></div>
+        <div class="doc-meta-item">Status: <strong>Approved & Implemented</strong></div>
+        <div class="doc-meta-item">Classification: <strong>Modular Monorepo</strong></div>
+        <div class="doc-meta-item">Date: <strong>October 2026</strong></div>
+      </div>
+    </header>
+
+    <!-- SECTION 1: EXECUTIVE SUMMARY -->
+    <section>
+      <h2>1. Executive Summary & Product Mission</h2>
+      <p>
+        <strong>SocialForge</strong> is an enterprise-grade, multi-tenant AI social media automation and orchestration platform engineered for marketing agencies, multi-brand holding companies, and digital creators. The platform consolidates the entire marketing lifecycle into a closed-loop operating system:
+      </p>
+
+      <div class="card">
+        <h3>Core Value Architecture</h3>
+        <ul>
+          <li><strong>Multi-Brand Tenant Isolation:</strong> Strict data segregation across tenants, brands, media assets, social accounts, and billing quotas.</li>
+          <li><strong>16-Dimension Brand Brain:</strong> Autonomous extraction of brand voice, target personas, tone, style rules, taboo words, and mandatory disclaimers from public URLs or manual entry.</li>
+          <li><strong>AI Campaign Arc Generator:</strong> 1-click transformation of business concepts into multi-day narrative arcs across Instagram, Facebook, X, LinkedIn, and TikTok.</li>
+          <li><strong>Multimodal Creative Studio:</strong> Native copy composition, Canva-like visual poster generation, and native FFmpeg 9:16 vertical short-form video synthesis with synchronized subtitles and audio ducking.</li>
+          <li><strong>Magic Client Approval Workflow:</strong> Zero-friction client review portals accessible via cryptographically signed tokens—no client login required.</li>
+          <li><strong>Resilient Hybrid Publishing Engine:</strong> Production OAuth 2.0 adapters for Meta, X, LinkedIn, and TikTok, alongside an instant Mock Sandbox Simulator.</li>
+          <li><strong>Closed-Loop SaaS Monetization:</strong> Full Stripe subscription billing, granular usage quotas, 3-tier dunning recovery, and an automated superadmin revenue telemetry dashboard.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 2: BUSINESS MODEL & MONETIZATION -->
+    <section>
+      <h2>2. Business Model & Commercial SaaS Strategy</h2>
+      <p>
+        SocialForge operates on a <strong>B2B Tiered SaaS Subscription Model</strong> with usage-based overage safeguards, targeted at solo creators, digital marketing agencies, and enterprise marketing holding companies.
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Commercial Tier</th>
+            <th>Monthly / Annual Price</th>
+            <th>Brands & Channels</th>
+            <th>Monthly Posts</th>
+            <th>AI Tokens & Video</th>
+            <th>Seats & Storage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Free Trial</strong></td>
+            <td>$0 (14-day trial)</td>
+            <td>1 Brand / 2 Channels</td>
+            <td>20 Posts / mo</td>
+            <td>50k tokens / 60s video</td>
+            <td>1 Seat / 500 MB</td>
+          </tr>
+          <tr>
+            <td><strong>Starter</strong></td>
+            <td>$29 / mo ($290 / yr)</td>
+            <td>2 Brands / 5 Channels</td>
+            <td>100 Posts / mo</td>
+            <td>250k tokens / 300s video</td>
+            <td>2 Seats / 5 GB</td>
+          </tr>
+          <tr>
+            <td><strong>Growth</strong></td>
+            <td>$79 / mo ($790 / yr)</td>
+            <td>5 Brands / 15 Channels</td>
+            <td>400 Posts / mo</td>
+            <td>1M tokens / 1,200s video</td>
+            <td>5 Seats / 25 GB</td>
+          </tr>
+          <tr>
+            <td><strong>Agency Pro</strong></td>
+            <td>$199 / mo ($1,990 / yr)</td>
+            <td>15 Brands / 45 Channels</td>
+            <td>1,500 Posts / mo</td>
+            <td>4M tokens / 4,800s video</td>
+            <td>15 Seats / 100 GB</td>
+          </tr>
+          <tr>
+            <td><strong>Agency Scale</strong></td>
+            <td>$499 / mo ($4,990 / yr)</td>
+            <td>Unlimited Brands & Channels</td>
+            <td>Unlimited Posts</td>
+            <td>15M tokens / 18,000s video</td>
+            <td>50 Seats / 500 GB</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="card">
+        <h3>Unit Economics & Gross Margins (>80%)</h3>
+        <ul>
+          <li><strong>Blended ARPA:</strong> $125 / month across active customer accounts.</li>
+          <li><strong>Customer Lifetime Value (LTV):</strong> ~$3,000 based on a 24-month agency retention horizon.</li>
+          <li><strong>Customer Acquisition Cost (CAC):</strong> ~$180 blended, yielding an outstanding <strong>16.6x LTV:CAC ratio</strong>.</li>
+          <li><strong>COGS Breakdown:</strong> OpenAI GPT-4o inference (~$3.20/brand/mo), FFmpeg worker CPU compute (~$0.02/video), MinIO/S3 object storage (~$0.015/GB/mo), and Stripe transaction processing (2.9% + $0.30).</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 3: C4 ARCHITECTURE -->
+    <section>
+      <h2>3. High-Level Architecture (C4 Model)</h2>
+
+      <h3>3.1 C4 Level 1: System Context Diagram</h3>
+      <div class="mermaid-wrapper">
+        <div class="mermaid">
+graph TB
+    subgraph "External Actors"
+        AgencyCreator["Agency Marketer / Designer\n(Authenticated via JWT)"]
+        ExternalClient["External Brand Client\n(Magic Token Link - Zero Login)"]
+        SystemAdmin["Superadmin / Finance Operator\n(RBAC Elevated Privileges)"]
+    end
+
+    subgraph "SocialForge Platform Core"
+        SocialForge["SocialForge Enterprise Platform\n• Web SPA (React 18)\n• API Gateway (Express)\n• Compute Workers (BullMQ + FFmpeg)\n• Relational Datastore (MySQL)\n• Distributed Cache & Broker (Redis)\n• Object Storage (MinIO / S3)"]
+    end
+
+    subgraph "External Cloud Infrastructure & Social Networks"
+        OpenAI["OpenAI API\n(GPT-4o Structured Inference)"]
+        MetaAPI["Meta Graph API v20.0\n(Instagram & Facebook Pages)"]
+        XAPI["X / Twitter API v2\n(OAuth 2.0 User Context)"]
+        LinkedInAPI["LinkedIn Marketing API\n(UGC Multi-Media Post API)"]
+        TikTokAPI["TikTok Content Posting API\n(Direct Video Dispatch)"]
+        StripeAPI["Stripe Billing & Payments\n(Checkout, Portal, Webhooks)"]
+    end
+
+    AgencyCreator -->|HTTPS / WSS| SocialForge
+    ExternalClient -->|HTTPS Tokenized Review| SocialForge
+    SystemAdmin -->|HTTPS Admin Console| SocialForge
+
+    SocialForge -->|AI Prompts & Extraction| OpenAI
+    SocialForge -->|Container & Media Publish| MetaAPI
+    SocialForge -->|Tweet & Thread Dispatch| XAPI
+    SocialForge -->|Article & Post Publishing| LinkedInAPI
+    SocialForge -->|Vertical Video Ingestion| TikTokAPI
+    SocialForge -->|Subscriptions & Invoices| StripeAPI
+        </div>
+      </div>
+
+      <h3>3.2 C4 Level 2: Container Topology</h3>
+      <div class="mermaid-wrapper">
+        <div class="mermaid">
+graph TB
+    subgraph "Client Layer"
+        WebClient["apps/web (React 18 + Vite)\nPort: 5173 / 80\n• Glassmorphic Design System\n• Real-Time Multi-Platform Previews\n• Canva-like Layer Canvas\n• 3-Tab Campaign Generator"]
+    end
+
+    subgraph "API & Orchestration Layer"
+        ExpressAPI["apps/api (Node.js 20 LTS + Express)\nPort: 4000\n• RESTful Endpoints (/api/v1)\n• TenantContext & Auth\n• AES-256 CryptoVault\n• SSRF Shield & Rate Limiting\n• Entitlement & Quota Guard"]
+    end
+
+    subgraph "Asynchronous Compute Layer"
+        WorkerService["apps/worker (BullMQ Worker)\n• Native FFmpeg 9:16 Video Rendering\n• Dynamic Audio Ducking\n• Subtitle Burn-In Engine\n• Batch Telemetry Sync"]
+    end
+
+    subgraph "Persistence & Storage Layer"
+        MySQL[("MySQL 8.4 / 9.x Community\nPort: 3308 / 3306\n• Schema: socialforge_db\n• Multi-Tenant Relational Schema\n• ACID Transactions & Cascading FKs")]
+        RedisCache[("Redis 7.2 Alpine\nPort: 6379\n• BullMQ Job Queues\n• In-Memory Token Blacklist\n• Sliding-Window Rate Limiting")]
+        MinIO[("MinIO S3-Compatible Storage\nPort: 9000 / 9001\n• Bucket: socialforge-media\n• Presigned Upload Signatures\n• Static Asset Distribution")]
+    end
+
+    subgraph "Shared Foundation"
+        SharedPkg["packages/shared\n• Universal TypeScript Types\n• Zod Request/Response Schemas\n• Billing & Plan Constants\n• Luxon Timezone Helpers"]
+    end
+
+    WebClient -->|REST API Calls (Bearer JWT)| ExpressAPI
+    WebClient -.->|Direct Presigned Uploads| MinIO
+
+    ExpressAPI -->|SQL Queries (Knex.js)| MySQL
+    ExpressAPI -->|Enqueue Jobs & Token Keys| RedisCache
+    ExpressAPI -->|Generate Presigned URLs| MinIO
+
+    WorkerService -->|Pop Rendering Jobs| RedisCache
+    WorkerService -->|Update Status & Metrics| MySQL
+    WorkerService -->|Read Raw & Write Output MP4s| MinIO
+
+    ExpressAPI -.-> SharedPkg
+    WorkerService -.-> SharedPkg
+    WebClient -.-> SharedPkg
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: FUNCTIONAL DEEP DIVE -->
+    <section>
+      <h2>4. Functional Specification & Current Features</h2>
+
+      <div class="card">
+        <h3>Feature Spotlight: 3-Tab Campaigns Page</h3>
+        <p>The campaign engine orchestrates complex multi-channel marketing campaigns through an intuitive three-tab interface:</p>
+        <ul>
+          <li><strong>Tab 1: CAMPAIGN GENERATOR</strong> — Multi-step AI wizard transforming raw ideas into 12 Strategic Dimensions and multi-post content sequences.</li>
+          <li><strong>Tab 2: Active Brand Campaigns</strong> — Visual portfolio displaying all saved campaigns, post counts, progress bars, and execution states.</li>
+          <li><strong>Tab 3: Selected Sprint Arc Drilldown</strong> — Granular multi-post timeline with platform-native variant editing, single-post AI rewrite actions, 1-click batch scheduling, and 1-click batch publishing.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Feature Spotlight: 16-Dimension Brand Brain</h3>
+        <p>Serves as the deterministic voice profile for each managed brand:</p>
+        <p>
+          Includes automatic URL scraping, target persona definitions, tone formality matrices, writing rhythm rules, signature emoji density, taboo buzzwords, and mandatory legal disclaimers.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>Feature Spotlight: Multimodal Creative Studios</h3>
+        <ul>
+          <li><strong>Content Studio:</strong> 10 Content Formats + 11 AI Style Transformations with live device previews for Instagram, X, LinkedIn, TikTok, and Facebook.</li>
+          <li><strong>Canva Visual Editor:</strong> Layered graphic composition across 4 aspect ratios (1:1, 4:5, 1.91:1, 9:16) with SVG rasterization.</li>
+          <li><strong>Reel Motion Studio:</strong> Native FFmpeg 9:16 short-form video generation with 4-beat narrative arcs, hardcoded ASS subtitles, and dynamic audio ducking.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 5: SEQUENCE WORKFLOWS -->
+    <section>
+      <h2>5. End-to-End Sequence Workflows</h2>
+
+      <h3>5.1 Multi-Platform Campaign Arc Synthesis & Dispatch</h3>
+      <div class="mermaid-wrapper">
+        <div class="mermaid">
+sequenceDiagram
+    autonumber
+    actor Creator as Agency Creator
+    participant Web as React SPA (Web)
+    participant API as Express API
+    participant AI as OpenAI GPT-4o
+    participant DB as MySQL DB
+    participant Queue as Redis (BullMQ)
+    participant Worker as FFmpeg Worker
+    participant Adapter as Social Adapter
+    participant Network as Live Social API
+
+    Creator->>Web: Enters launch idea & selects goals (Campaign Generator)
+    Web->>API: POST /api/v1/brands/:brandId/campaigns/strategy
+    API->>DB: Fetch 16-Dimension Brand Brain
+    API->>AI: Synthesize 12 Dimensions & Multi-Post Plan (Structured JSON)
+    AI-->>API: Return complete strategy + platform-native post variants
+    API-->>Web: Render 12-Dimension Strategy Preview & Post Sequence
+    Creator->>Web: Clicks "1-Click Generate & Batch Schedule"
+    Web->>API: POST /api/v1/brands/:brandId/campaigns/generate
+    API->>DB: Insert Campaign record & related Posts and PostVariants
+    API->>Queue: Enqueue BullMQ delayed jobs with calculated UTC timestamps
+    API-->>Web: Return 201 Created & transition to Sprint Arc Tab
+    
+    Note over Queue,Worker: When scheduled time arrives (e.g. Day 1 at 09:00 UTC)
+    Queue->>API: Trigger delayed publish event
+    API->>DB: Set Post status = 'publishing' (Idempotency Lock)
+    API->>DB: Retrieve AES-256 decrypted access token
+    API->>Adapter: adapter.publish(variant, credentials)
+    Adapter->>Network: Execute network API call (e.g. Meta container publish)
+    Network-->>Adapter: Return HTTP 200 + remote post permalink
+    Adapter-->>API: PublishResult (remotePostId, remotePostUrl)
+    API->>DB: Update variant status = 'published' & record publish_log
+    API->>DB: Increment TenantUsageCounters.posts_published
+        </div>
+      </div>
+
+      <h3>5.2 Magic Review Approval Flow (Zero-Login Client Sign-Off)</h3>
+      <div class="mermaid-wrapper">
+        <div class="mermaid">
+sequenceDiagram
+    autonumber
+    actor Creator as Agency Creator
+    actor Client as External Client
+    participant API as Express API Gateway
+    participant DB as MySQL DB
+    participant Portal as Magic Review SPA Portal
+
+    Creator->>API: POST /api/v1/posts/:postId/request-approval
+    API->>API: Generate cryptographically secure 256-bit magic_token
+    API->>DB: Store APPROVAL_REQUEST record with 7-day expiration
+    API-->>Creator: Return signed link: https://socialforge.app/review/:magicToken
+    Creator->>Client: Shares Magic Review link via email or Slack
+    Client->>Portal: Opens https://socialforge.app/review/:magicToken
+    Portal->>API: GET /api/v1/approvals/review/:magicToken
+    API->>DB: Verify token validity and expiration
+    DB-->>API: Return Post, Variants, and Creative Media Assets
+    API-->>Portal: Render full multi-platform device mockups
+    alt Client Approves Post
+        Client->>Portal: Clicks "Approve Post"
+        Portal->>API: POST /api/v1/approvals/review/:magicToken/approve
+        API->>DB: Update ApprovalRequest = 'approved' & Post = 'approved'
+        API-->>Portal: Confirmation receipt displayed
+    else Client Requests Changes
+        Client->>Portal: Types feedback notes & clicks "Request Revisions"
+        Portal->>API: POST /api/v1/approvals/review/:magicToken/comment
+        API->>DB: Store APPROVAL_COMMENT & update Post = 'changes_requested'
+        API-->>Portal: Feedback logged
+    end
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6: DATA MODEL -->
+    <section>
+      <h2>6. Relational Data Architecture (MySQL 8.4 / 9.x)</h2>
+      <div class="mermaid-wrapper">
+        <div class="mermaid">
+erDiagram
+    TENANTS ||--o{ BRANDS : owns
+    TENANTS ||--o| TENANT_SUBSCRIPTIONS : subscribes
+    TENANTS ||--o{ TENANT_USAGE_COUNTERS : meters
+    BRANDS ||--o| BRAND_KITS : configures
+    BRANDS ||--o| BRAND_BRAINS : embodies
+    BRANDS ||--o{ SOCIAL_ACCOUNTS : links
+    BRANDS ||--o{ CAMPAIGNS : organizes
+    BRANDS ||--o{ POSTS : publishes
+    CAMPAIGNS ||--o{ POSTS : sequences
+    POSTS ||--o{ POST_VARIANTS : adapts
+    POSTS ||--o{ APPROVAL_REQUESTS : submits
+    POST_VARIANTS ||--o{ PUBLISH_LOGS : records
+    POST_VARIANTS ||--o{ ANALYTICS_METRICS : tracks
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 7: SECURITY & COMPLIANCE -->
+    <section>
+      <h2>7. Security, Compliance & Isolation Architecture</h2>
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>Security Vector</th>
+              <th>Threat Vector Mitigated</th>
+              <th>Technical Implementation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Multi-Tenancy Isolation</strong></td>
+              <td>Cross-tenant data exposure</td>
+              <td>Enforced <code>tenant_id</code> query scoping on all Knex SQL statements and database foreign key cascades.</td>
+            </tr>
+            <tr>
+              <td><strong>AES-256-GCM Vault</strong></td>
+              <td>Credential theft at rest</td>
+              <td>Unique 12-byte initialization vectors (IV) and 16-byte authentication tags for all stored social tokens.</td>
+            </tr>
+            <tr>
+              <td><strong>SSRF Defense Shield</strong></td>
+              <td>Cloud metadata leakage & internal port probing</td>
+              <td>Hostname resolution blocking loopback (127.0.0.1), RFC1918 subnets, and AWS/GCP metadata IP (169.254.169.254).</td>
+            </tr>
+            <tr>
+              <td><strong>Sliding-Window Limiter</strong></td>
+              <td>Brute-force auth attacks & DDoS</td>
+              <td>In-memory sliding window rate limiter returning standard <code>HTTP 429</code> and <code>Retry-After</code> headers.</td>
+            </tr>
+            <tr>
+              <td><strong>Publishing Idempotency</strong></td>
+              <td>Duplicate post dispatches on network retries</td>
+              <td>Transactional status locking to <code>publishing</code> prior to adapter invocation.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 8: CONCLUSION -->
+    <section>
+      <h2>8. Technology Stack & Deployment Matrix</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Layer / Service</th>
+            <th>Technology Base</th>
+            <th>Port Allocation</th>
+            <th>Deployment Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>`socialforge-web`</strong></td>
+            <td>React 18 + Vite + Vanilla CSS</td>
+            <td>5173 / 80</td>
+            <td>Single Page Application UI with Glassmorphic Design System</td>
+          </tr>
+          <tr>
+            <td><strong>`socialforge-api`</strong></td>
+            <td>Node.js 20 LTS + Express + Knex.js</td>
+            <td>4000</td>
+            <td>REST API Gateway, Auth, AES Vault, Entitlement Engine</td>
+          </tr>
+          <tr>
+            <td><strong>`socialforge-worker`</strong></td>
+            <td>BullMQ + Native FFmpeg 6.x</td>
+            <td>N/A</td>
+            <td>Asynchronous 9:16 Video Rendering & Telemetry Synchronization</td>
+          </tr>
+          <tr>
+            <td><strong>`socialforge-mysql`</strong></td>
+            <td>MySQL 8.4 / 9.x Community</td>
+            <td>3308 : 3306</td>
+            <td>Relational ACID Database (Schema: <code>socialforge_db</code>)</td>
+          </tr>
+          <tr>
+            <td><strong>`socialforge-redis`</strong></td>
+            <td>Redis 7.2 Alpine</td>
+            <td>6379</td>
+            <td>BullMQ Job Broker, Token Cache, Rate Limiting Store</td>
+          </tr>
+          <tr>
+            <td><strong>`socialforge-minio`</strong></td>
+            <td>MinIO S3-Compatible Storage</td>
+            <td>9000 / 9001</td>
+            <td>Media Asset Storage & Presigned Upload Distribution</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+# Monorepo Docker ignore rules
+node_modules
+apps/*/node_modules
+packages/*/node_modules
+
+# Build artifacts
+dist
+apps/*/dist
+packages/*/dist
+build
+.cache
+
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# Scratch and intermediate render directories
+scratch
+apps/api/uploads/video-renders/scratch/*
+apps/worker/uploads/video-renders/scratch/*
+uploads/video-renders/scratch/*
+
+# Version control & system files
+.git
+.gitignore
+.gemini
+.agents
+.vscode
+.idea
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+Thumbs.db

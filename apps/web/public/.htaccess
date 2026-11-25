@@ -1,0 +1,23 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  <IfModule mod_proxy.c>
+    RewriteRule ^api/(.*)$ http://127.0.0.1:4000/api/$1 [P,L]
+    RewriteRule ^health$ http://127.0.0.1:4000/health [P,L]
+  </IfModule>
+
+  RewriteCond %{REQUEST_URI} ^/api [NC,OR]
+  RewriteCond %{REQUEST_URI} ^/health [NC]
+  RewriteRule ^ - [L]
+
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_URI} !^/api [NC]
+  RewriteCond %{REQUEST_URI} !^/health [NC]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
+
+DirectoryIndex index.html
+Options -Indexes

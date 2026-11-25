@@ -1,0 +1,35 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # 1. Reverse Proxy API requests to Node.js backend on port 4000
+  <IfModule mod_proxy.c>
+    RewriteRule ^api/(.*)$ http://127.0.0.1:4000/api/$1 [P,L]
+    RewriteRule ^health$ http://127.0.0.1:4000/health [P,L]
+  </IfModule>
+
+  # 2. Never rewrite /api or /health to index.html
+  RewriteCond %{REQUEST_URI} ^/api [NC,OR]
+  RewriteCond %{REQUEST_URI} ^/health [NC]
+  RewriteRule ^ - [L]
+
+  # 3. If requested file exists in apps/web/dist, serve it directly
+  RewriteCond %{DOCUMENT_ROOT}/apps/web/dist/$1 -f
+  RewriteRule ^(.*)$ apps/web/dist/$1 [L]
+
+  # 4. Direct route to static assets inside dist
+  RewriteCond %{REQUEST_URI} ^/assets/
+  RewriteCond %{DOCUMENT_ROOT}/apps/web/dist%{REQUEST_URI} -f
+  RewriteRule ^(.*)$ apps/web/dist/$1 [L]
+
+  # 5. Single Page Application (SPA) Fallback: Serve index.html ONLY for page routes
+  RewriteCond %{REQUEST_URI} !^/api [NC]
+  RewriteCond %{REQUEST_URI} !^/health [NC]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.*)$ apps/web/dist/index.html [L]
+</IfModule>
+
+# Ensure DirectoryIndex finds index.html
+DirectoryIndex index.html index.htm apps/web/dist/index.html
+Options -Indexes

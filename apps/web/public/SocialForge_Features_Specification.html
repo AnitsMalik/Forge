@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HoaspForge — Complete Features Specification & Reference Manual</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        darkMode: true,
+        background: '#0d111c',
+        primaryColor: '#8b5cf6',
+        primaryBorderColor: '#a78bfa',
+        primaryTextColor: '#ffffff',
+        lineColor: '#38bdf8',
+        secondaryColor: '#ec4899',
+        tertiaryColor: '#1e293b'
+      }
+    });
+  </script>
+  <style>
+    :root {
+      --bg-primary: #07090e;
+      --bg-surface: #0e121e;
+      --bg-card: #131827;
+      --border-color: rgba(255, 255, 255, 0.1);
+      --border-accent: rgba(139, 92, 246, 0.3);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-primary: #8b5cf6;
+      --accent-pink: #ec4899;
+      --accent-emerald: #10b981;
+      --accent-sky: #0ea5e9;
+      --accent-amber: #f59e0b;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.65;
+      padding: 0;
+      margin: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Fixed Download & Print Action Header */
+    .top-action-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(14, 18, 30, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .top-action-bar .brand-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .top-action-bar .brand-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .top-action-bar .doc-tag {
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      background: rgba(139, 92, 246, 0.18);
+      color: #c084fc;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .top-action-bar .btn-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .btn-pdf {
+      background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
+    }
+    .btn-pdf:hover { opacity: 0.92; transform: translateY(-1px); }
+
+    .btn-md {
+      background: rgba(255, 255, 255, 0.08);
+      color: #f1f5f9;
+      border: 1px solid var(--border-color);
+    }
+    .btn-md:hover { background: rgba(255, 255, 255, 0.14); color: #ffffff; }
+
+    .btn-app {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .btn-app:hover { background: rgba(16, 185, 129, 0.25); }
+
+    /* Main Container */
+    .doc-container {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 48px 24px 96px;
+    }
+
+    /* Hero Header */
+    .doc-hero {
+      border: 1px solid var(--border-accent);
+      background: linear-gradient(135deg, rgba(14, 18, 30, 0.9) 0%, rgba(30, 27, 75, 0.3) 100%);
+      border-radius: 16px;
+      padding: 40px;
+      margin-bottom: 48px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .pill-purple { background: rgba(139, 92, 246, 0.15); color: #c084fc; border: 1px solid rgba(139, 92, 246, 0.3); }
+    .pill-emerald { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .pill-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+    h1.doc-title {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1.25;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    p.doc-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      max-width: 880px;
+    }
+
+    /* Headings */
+    h2 {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin: 48px 0 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      letter-spacing: -0.01em;
+    }
+
+    h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      margin: 28px 0 14px;
+    }
+
+    p { margin-bottom: 16px; color: var(--text-secondary); font-size: 0.95rem; }
+
+    ul, ol { margin-left: 24px; margin-bottom: 20px; color: var(--text-secondary); font-size: 0.95rem; }
+    li { margin-bottom: 8px; }
+
+    strong { color: #f8fafc; font-weight: 700; }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0 32px;
+      background: var(--bg-surface);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      font-size: 0.88rem;
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.04);
+      padding: 14px 18px;
+      text-align: left;
+      font-weight: 700;
+      color: #ffffff;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    td {
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text-secondary);
+      vertical-align: top;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+    /* Code & Mono */
+    code {
+      font-family: var(--font-mono);
+      background: rgba(139, 92, 246, 0.1);
+      color: #c084fc;
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+
+    pre {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+      overflow-x: auto;
+    }
+
+    pre code {
+      background: transparent;
+      border: none;
+      padding: 0;
+      color: #e2e8f0;
+    }
+
+    /* Cards */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin: 24px 0;
+    }
+
+    .info-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      transition: border-color 0.2s ease;
+    }
+    .info-card:hover { border-color: rgba(139, 92, 246, 0.4); }
+
+    .info-card h4 {
+      font-size: 1rem;
+      color: #ffffff;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Diagram wrapper */
+    .diagram-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      margin: 24px 0;
+      text-align: center;
+    }
+
+    /* Print styles */
+    @media print {
+      .top-action-bar { display: none !important; }
+      body {
+        background: #ffffff !important;
+        color: #0f172a !important;
+      }
+      .doc-container { padding: 0 !important; max-width: 100% !important; }
+      .doc-hero {
+        background: #f8fafc !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: none !important;
+        color: #0f172a !important;
+      }
+      h1.doc-title, h2, h3, strong { color: #0f172a !important; }
+      p, li, td { color: #334155 !important; }
+      table { border-color: #cbd5e1 !important; background: #ffffff !important; }
+      th { background: #f1f5f9 !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
+      td { border-color: #e2e8f0 !important; }
+      .info-card, .diagram-box { background: #ffffff !important; border-color: #cbd5e1 !important; }
+      code { background: #f1f5f9 !important; color: #6b21a8 !important; border-color: #e2e8f0 !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Download & Print Bar -->
+  <header class="top-action-bar">
+    <div class="brand-info">
+      <div class="brand-title">
+        <span>🚀 HoaspForge</span>
+        <span class="doc-tag">Production Spec v6.9.3</span>
+      </div>
+    </div>
+    <div class="btn-group">
+      <button onclick="window.print()" class="action-btn btn-pdf" title="Print document or save as high-resolution PDF">
+        <span>🖨️ Save as PDF / Print</span>
+      </button>
+      <a href="/HoaspForge_Features_Specification.md" download class="action-btn btn-md" title="Download raw Markdown documentation file">
+        <span>📥 Download .MD</span>
+      </a>
+      <a href="/" class="action-btn btn-app" title="Launch the live application workspace">
+        <span>⚡ Launch App</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="doc-container">
+
+    <!-- Document Hero -->
+    <div class="doc-hero">
+      <div class="hero-meta">
+        <span class="pill-badge pill-purple">Official Specification Manual</span>
+        <span class="pill-badge pill-emerald">100% Test Verified</span>
+        <span class="pill-badge pill-amber">Release v6.9.3</span>
+      </div>
+      <h1 class="doc-title">HoaspForge — Complete Application Features Specification</h1>
+      <p class="doc-subtitle">
+        Architectural guide, technical blueprints, and operational manual covering all 11 core system domains, commercial SaaS capabilities, and containerized deployment infrastructure.
+      </p>
+    </div>
+
+    <!-- Section 1 -->
+    <h2>1. Executive Platform Overview & Architectural Topology</h2>
+    <p>
+      HoaspForge is an enterprise-grade, multi-tenant autonomous social marketing platform designed for agencies, e-commerce brands, and marketing teams. The system continuously ingests business catalog data, synthesizes platform-native copy and visual creatives, enforces strict brand voice and compliance guardrails, routes content through zero-login client approval portals, and automatically schedules and dispatches posts to social networks with real-time performance telemetry.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>System Layer</th>
+          <th>Technologies & Core Frameworks</th>
+          <th>Architectural Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Frontend SPA</strong></td>
+          <td>React 18, TypeScript, Vite 5, Lucide Icons, Vanilla CSS Design System</td>
+          <td>Ultra-fast single page application with native theme support (Dark / Light modes) and mobile/tablet responsive layouts.</td>
+        </tr>
+        <tr>
+          <td><strong>Backend API Gateway</strong></td>
+          <td>Node.js (v20 LTS), Express, Knex.js, TypeScript</td>
+          <td>RESTful multi-tenant API gateway with JWT/session authentication, rate limiting, and security headers.</td>
+        </tr>
+        <tr>
+          <td><strong>Relational Database</strong></td>
+          <td>MySQL 8.4 LTS</td>
+          <td>Multi-tenant schema with 76 synchronized migrations, foreign keys, cascading deletes, and indexed search.</td>
+        </tr>
+        <tr>
+          <td><strong>Queue & Cache</strong></td>
+          <td>Redis 7.2 Alpine, BullMQ</td>
+          <td>Asynchronous job queues for video rendering, data sync, and scheduled Meta Graph API dispatching.</td>
+        </tr>
+        <tr>
+          <td><strong>Object Storage</strong></td>
+          <td>MinIO S3 / AWS S3</td>
+          <td>Encrypted object storage for uploaded assets, rendered visual posters, video reels, and exported media.</td>
+        </tr>
+        <tr>
+          <td><strong>Visual Rendering</strong></td>
+          <td>Satori, Sharp, HTML5 Canvas, FFmpeg</td>
+          <td>Server-side and client-side high-resolution rendering (1080x1080, 1080x1350, 1080x1920, 1200x675).</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Section 2 -->
+    <h2>2. Multi-Tenant Workspaces & Identity Governance</h2>
+    <p>
+      HoaspForge enforces strict row-level multi-tenant data isolation and role-based access control.
+    </p>
+    <div class="card-grid">
+      <div class="info-card">
+        <h4>🏢 Workspace Scoping</h4>
+        <p>Every resource (brands, posts, campaigns, automations, templates, files) is partitioned by <code>tenant_id</code>. Cross-tenant queries are blocked at the ORM/database layer with multi-workspace switching for agency power users.</p>
+      </div>
+      <div class="info-card">
+        <h4>🛡️ Role-Based Access (RBAC)</h4>
+        <p><strong>Owner:</strong> Full workspace & billing authority.<br><strong>Admin:</strong> Team invitations, brand kit creation & automation.<br><strong>Creator:</strong> Post drafting, studio generation & asset uploads.</p>
+      </div>
+      <div class="info-card">
+        <h4>🔐 Enterprise Encryption</h4>
+        <p>AES-256-GCM envelope encryption for all third-party access tokens and API secrets. Argon2id password hashing and strict HTTP security headers.</p>
+      </div>
+    </div>
+
+    <!-- Section 3 -->
+    <h2>3. Brand Brain & Multi-Brand Voice System (16-in-1 Brand Kit)</h2>
+    <p>
+      Each workspace can manage multiple distinct brand identities via the <strong>Brand Brain</strong> engine (<code>/brands</code>):
+    </p>
+    <ul>
+      <li><strong>Brand Identity & Typography:</strong> Primary font family, heading font, body font, and mono font tokens.</li>
+      <li><strong>Dynamic Color Palette:</strong> Primary brand color, secondary color, accent tone, canvas background, and surface elevations.</li>
+      <li><strong>Logo & Watermark Engine:</strong> Dark mode logo, light mode logo, and automated canvas watermark placement.</li>
+      <li><strong>Tone & Voice Guidelines:</strong> Configurable tone profiles (e.g., <em>Witty & Energetic</em>, <em>Authoritative & Clinical</em>, <em>Minimalist Luxury</em>).</li>
+      <li><strong>Brand Vocabulary & Keywords:</strong> Mandated signature keywords and approved brand taglines.</li>
+      <li><strong>Taboo & Blocked Words:</strong> Real-time linting engine that flags forbidden phrases or non-compliant industry terms.</li>
+      <li><strong>Target Audience Demographics:</strong> Persona definitions feeding context into the AI copywriting synthesis prompt.</li>
+      <li><strong>Brand Handle & Social Slugs:</strong> Automated hashtag and handle attribution (e.g., <code>@brand_handle</code>).</li>
+    </ul>
+
+    <!-- Section 4 -->
+    <h2>4. Channel Connect Hub & Business Data Ingestion (Stages 1 – 3)</h2>
+    <p>
+      The <strong>Connect Hub</strong> (<code>/channels</code> & <code>/connections</code>) connects HoaspForge to social media platforms and upstream business data catalogs:
+    </p>
+    <ul>
+      <li><strong>Meta Graph API v20.0:</strong> OAuth 2.0 handshake for Facebook Pages and Instagram Professional (Creator & Business). Includes a Mock Sandbox Environment for end-to-end dry-run testing.</li>
+      <li><strong>Google Sheets Ingestion:</strong> Continuous row-by-row sync from live Google Sheets spreadsheets.</li>
+      <li><strong>CSV / Excel Ingestion:</strong> Direct bulk upload of product catalogs with automated column mapping.</li>
+      <li><strong>Shopify Product Webhooks:</strong> Real-time ingestion of newly created or updated e-commerce items.</li>
+      <li><strong>Marketing Object Normalization:</strong> Normalizes external data into immutable <code>marketing_objects</code> records with SHA-256 idempotency deduplication.</li>
+    </ul>
+
+    <!-- Section 5 -->
+    <h2>5. Creative Suite: Content Studio, Canva Studio & Video Engine</h2>
+    <div class="card-grid">
+      <div class="info-card">
+        <h4>✍️ Content Studio</h4>
+        <p>Synthesizes platform-native copy variants for Instagram (hooks + hashtags), Facebook (conversational + CTA), LinkedIn, X, and TikTok. Incorporates a Zero Token Leak Guard preventing credential leaks.</p>
+      </div>
+      <div class="info-card">
+        <h4>🎨 AI Design Studio (Canva)</h4>
+        <p>Vector visual canvas supporting presets: 1:1 Square, 4:5 Portrait, 9:16 Stories/Reels, 16:9 Landscape, and 2:3 Pinterest. Includes AI Poster Generator across 5 creative styles.</p>
+      </div>
+      <div class="info-card">
+        <h4>🎬 Reel Motion Studio</h4>
+        <p>Short-form 9:16 video composition engine with kinetic typography, video b-roll overlays, and server-side FFmpeg rendering.</p>
+      </div>
+    </div>
+
+    <!-- Section 6 -->
+    <h2>6. Stage 4 Versioned Template Engine & Catalog</h2>
+    <p>
+      The <strong>Template Catalog</strong> (<code>/templates</code> and <code>/templates/editor/:id</code>) provides enterprise graphic layout governance:
+    </p>
+    <ul>
+      <li><strong>30 Built-in Canonical Templates</strong> across 7 categories (Product, Offer, Education, Trust, Company, Event, Vertical) and 22 subcategories.</li>
+      <li><strong>WCAG 2.1 AA Contrast Scoring:</strong> Mathematical luminance ratio scoring (requires <code>&gt;= 4.5:1</code> for body, <code>&gt;= 3.0:1</code> for bold headers) guaranteeing visual accessibility.</li>
+      <li><strong>Dynamic Variable Binding:</strong> Automatic variable replacement (e.g., <code>{{product_name}}</code>, <code>{{price}}</code>, <code>{{discount}}</code>).</li>
+      <li><strong>Immutable Version Branching:</strong> Active templates freeze on edit/publication into <code>template_versions</code>, automatically branching to a new active version with instant rollback support.</li>
+      <li><strong>AI Mutation Protection:</strong> AI agents are permitted to search, select, and populate template parameters, but are strictly blocked (<code>AI_MUTATION_RESTRICTED</code>) from deleting or altering template definitions.</li>
+    </ul>
+
+    <!-- Section 7 -->
+    <h2>7. Autonomous AI Growth Agent & Workflow Automations</h2>
+    <p>
+      The autonomous execution layer provides trigger-action automation pipelines (<code>/automations</code>) and agent governance (<code>/ai</code>):
+    </p>
+    <ul>
+      <li><strong>Autonomous Fleet:</strong> Configurable autonomy levels from L1 Assistive (Drafts only) to L4 Autonomous.</li>
+      <li><strong>Trigger-Action DAGs:</strong> Triggers (Cron schedules, Google Sheet row added, Webhook ingress) chained to actions (AI copy, template rendering, approval link, publishing).</li>
+      <li><strong>Prebuilt Recipes:</strong> Flagship Product Promotion Arc, Flash Sale Countdown Engine, Weekly Educational Series, and Review Spotlight.</li>
+      <li><strong>Dead-Letter Queue (DLQ):</strong> Fail-safe queue handling failed runs with full stack trace inspection, replay, and discard controls.</li>
+    </ul>
+
+    <!-- Section 8 -->
+    <h2>8. Governance, Compliance & Human Approval Gate (Stage 8)</h2>
+    <p>
+      HoaspForge guarantees that no autonomous process can publish unvetted material to public social feeds:
+    </p>
+    <div class="diagram-box">
+      <div class="mermaid">
+flowchart LR
+    A["Draft Post Created"] -->|Enforce Zero Silent Publishing| B["In Review Status"]
+    B -->|Generate 64-char Hex Token| C["72-Hour Magic Review Portal"]
+    C -->|Client Mobile Sign-off| D["Approved Status"]
+    D -->|Queue Worker Dispatch| E["Published with Remote IDs"]
+      </div>
+    </div>
+    <ul>
+      <li><strong>Zero Silent Publishing Mandate:</strong> All posts are initialized strictly in <code>draft</code> status.</li>
+      <li><strong>72-Hour Zero-Login Magic Review Links:</strong> Mobile-first review portal (<code>/review/:token</code>) allowing clients to approve or request edits without a platform account.</li>
+      <li><strong>Full Audit Trail:</strong> Records reviewer email, IP, and timestamp.</li>
+    </ul>
+
+    <!-- Section 9 -->
+    <h2>9. Closed-Loop Performance Analytics & Growth Intelligence</h2>
+    <p>
+      The <strong>Growth Intelligence</strong> suite (<code>/analytics</code>) closes the loop between publication and future content creation:
+    </p>
+    <ul>
+      <li><strong>Real Telemetry Ingestion:</strong> Ingests Reach, Impressions, Clicks, Engagement Rate, Comments, and Shares directly from Meta Graph API.</li>
+      <li><strong>Algorithmic Winner Detection:</strong> Identifies high-velocity posts and feeds attributes back into the Brand Brain prompt context.</li>
+      <li><strong>Hourly & Daily Rollups:</strong> Timeseries analytics stored in <code>post_analytics_metrics</code>.</li>
+    </ul>
+
+    <!-- Section 10 -->
+    <h2>10. Commercial Subscription Plans, Pricing Tiers & Feature Matrix</h2>
+    <p>
+      HoaspForge provides transparent commercial SaaS subscription tiers backed by Stripe Billing, multi-dimensional quota metering, and automated entitlement guards.
+    </p>
+
+    <h3>Commercial Subscription Tiers Overview</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Plan Tier</th>
+          <th>Monthly Price</th>
+          <th>Annual Price (Save 20%)</th>
+          <th>Target Audience</th>
+          <th>Autonomy Ceiling</th>
+          <th>Brands</th>
+          <th>Seats</th>
+          <th>Channels</th>
+          <th>Posts/Mo</th>
+          <th>AI Tokens</th>
+          <th>Video Compute</th>
+          <th>Cloud Storage</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Free Trial</strong></td>
+          <td><span class="pill-badge pill-purple">$0 (14d)</span></td>
+          <td>—</td>
+          <td>New Evaluators</td>
+          <td>L2 (Assisted)</td>
+          <td>1</td>
+          <td>1</td>
+          <td>3</td>
+          <td>30</td>
+          <td>50,000</td>
+          <td>120s</td>
+          <td>1 GB</td>
+        </tr>
+        <tr>
+          <td><strong>Starter</strong></td>
+          <td><strong>$29</strong> / mo</td>
+          <td>$24 / mo ($290/yr)</td>
+          <td>Solo Creators</td>
+          <td>L2 (Assisted)</td>
+          <td>1</td>
+          <td>2</td>
+          <td>3</td>
+          <td>100</td>
+          <td>100,000</td>
+          <td>300s (5m)</td>
+          <td>5 GB</td>
+        </tr>
+        <tr>
+          <td><strong>Growth</strong> <span class="pill-badge pill-emerald">Flagship</span></td>
+          <td><strong>$79</strong> / mo</td>
+          <td>$65 / mo ($780/yr)</td>
+          <td>Growing E-commerce Teams</td>
+          <td>L3 (Supervised)</td>
+          <td>5</td>
+          <td>5</td>
+          <td>15</td>
+          <td>500</td>
+          <td>500,000</td>
+          <td>1,200s (20m)</td>
+          <td>20 GB</td>
+        </tr>
+        <tr>
+          <td><strong>Agency Pro</strong></td>
+          <td><strong>$249</strong> / mo</td>
+          <td>$199 / mo ($2,388/yr)</td>
+          <td>Digital Agencies</td>
+          <td>L4 (High Autonomy)</td>
+          <td>25</td>
+          <td>20</td>
+          <td>100</td>
+          <td>2,500</td>
+          <td>2,500,000</td>
+          <td>3,600s (60m)</td>
+          <td>100 GB</td>
+        </tr>
+        <tr>
+          <td><strong>Scale</strong></td>
+          <td><strong>$599</strong> / mo</td>
+          <td>$479 / mo ($5,750/yr)</td>
+          <td>High-Volume Publishers</td>
+          <td>L5 (Autonomous)</td>
+          <td>100</td>
+          <td>50</td>
+          <td>250</td>
+          <td>10,000</td>
+          <td>10,000,000</td>
+          <td>18,000s (300m)</td>
+          <td>500 GB</td>
+        </tr>
+        <tr>
+          <td><strong>Enterprise</strong></td>
+          <td>Custom Quote</td>
+          <td>Custom Contract</td>
+          <td>Corporations & Networks</td>
+          <td>L5 (Autonomous)</td>
+          <td>Unlimited</td>
+          <td>Custom</td>
+          <td>Unlimited</td>
+          <td>Unlimited</td>
+          <td>Custom Bespoke</td>
+          <td>Dedicated Node</td>
+          <td>Dedicated S3</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Feature-by-Feature Entitlement Comparison Matrix</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Platform Capability &amp; Entitlement</th>
+          <th>Starter ($29/mo)</th>
+          <th>Growth ($79/mo)</th>
+          <th>Agency Pro ($249/mo)</th>
+          <th>Scale ($599/mo)</th>
+          <th>Enterprise</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Managed Brand Kits (Brand Brain)</strong></td>
+          <td>1 Brand Kit</td>
+          <td>5 Brand Kits</td>
+          <td>25 Brand Kits</td>
+          <td>100 Brand Kits</td>
+          <td>Unlimited Brand Kits</td>
+        </tr>
+        <tr>
+          <td><strong>Team Member Seats</strong></td>
+          <td>2 Seats</td>
+          <td>5 Seats</td>
+          <td>20 Seats</td>
+          <td>50 Seats</td>
+          <td>Custom / Unlimited</td>
+        </tr>
+        <tr>
+          <td><strong>Connected Social Accounts</strong></td>
+          <td>3 Accounts</td>
+          <td>15 Accounts</td>
+          <td>100 Accounts</td>
+          <td>250 Accounts</td>
+          <td>Unlimited Accounts</td>
+        </tr>
+        <tr>
+          <td><strong>Monthly Post Publishing Limit</strong></td>
+          <td>100 Posts / mo</td>
+          <td>500 Posts / mo</td>
+          <td>2,500 Posts / mo</td>
+          <td>10,000 Posts / mo</td>
+          <td>Unlimited Posts</td>
+        </tr>
+        <tr>
+          <td><strong>Monthly AI Generation Credits</strong></td>
+          <td>100 Generations (~100k)</td>
+          <td>500 Generations (~500k)</td>
+          <td>2,500 Generations (~2.5M)</td>
+          <td>10,000 Generations (~10M)</td>
+          <td>Custom Quotas</td>
+        </tr>
+        <tr>
+          <td><strong>Video Transcoding / FFmpeg Compute</strong></td>
+          <td>300s (5 mins)</td>
+          <td>1,200s (20 mins)</td>
+          <td>3,600s (60 mins)</td>
+          <td>18,000s (300 mins)</td>
+          <td>Dedicated Worker Pool</td>
+        </tr>
+        <tr>
+          <td><strong>Asset Cloud Storage</strong></td>
+          <td>5 GB</td>
+          <td>20 GB</td>
+          <td>100 GB</td>
+          <td>500 GB</td>
+          <td>Dedicated S3 Bucket</td>
+        </tr>
+        <tr>
+          <td><strong>Active Automation Workflows</strong></td>
+          <td>3 Rules</td>
+          <td>10 Rules</td>
+          <td>50 Rules</td>
+          <td>200 Rules</td>
+          <td>Unlimited Rules</td>
+        </tr>
+        <tr>
+          <td><strong>Analytics Historical Retention</strong></td>
+          <td>30 Days</td>
+          <td>90 Days</td>
+          <td>365 Days</td>
+          <td>730 Days (2 Years)</td>
+          <td>Unlimited / Cold Storage</td>
+        </tr>
+        <tr>
+          <td><strong>Autonomy Ceiling</strong></td>
+          <td>L2 (Assisted)</td>
+          <td>L3 (Supervised)</td>
+          <td>L4 (High Autonomy)</td>
+          <td>L5 (Autonomous)</td>
+          <td>L5 (Autonomous)</td>
+        </tr>
+        <tr>
+          <td><strong>Stage 4 Template Catalog (30 Templates)</strong></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+          <td><span class="pill-badge pill-emerald">Included + Custom</span></td>
+        </tr>
+        <tr>
+          <td><strong>Canva Studio Multi-Layer Canvas</strong></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+        </tr>
+        <tr>
+          <td><strong>Meta Graph Multi-Account Publishing</strong></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+        </tr>
+        <tr>
+          <td><strong>Client Review Magic Links (Zero Login)</strong></td>
+          <td><span style="color: var(--text-muted);">&mdash;</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+        </tr>
+        <tr>
+          <td><strong>Multi-Workspace Switching (Agency)</strong></td>
+          <td><span style="color: var(--text-muted);">&mdash;</span></td>
+          <td><span style="color: var(--text-muted);">&mdash;</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+        </tr>
+        <tr>
+          <td><strong>White-Label Custom Domains &amp; Branding</strong></td>
+          <td><span style="color: var(--text-muted);">&mdash;</span></td>
+          <td><span style="color: var(--text-muted);">&mdash;</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+        </tr>
+        <tr>
+          <td><strong>Developer REST API &amp; Webhooks</strong></td>
+          <td><span style="color: var(--text-muted);">&mdash;</span></td>
+          <td><span style="color: var(--text-muted);">&mdash;</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+        </tr>
+        <tr>
+          <td><strong>Priority Publishing Queues (BullMQ)</strong></td>
+          <td><span style="color: var(--text-muted);">&mdash;</span></td>
+          <td><span style="color: var(--text-muted);">&mdash;</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+          <td><span class="pill-badge pill-purple">Dedicated Queue</span></td>
+        </tr>
+        <tr>
+          <td><strong>Meta Ads Manager Integration</strong></td>
+          <td><span style="color: var(--text-muted);">&mdash;</span></td>
+          <td><span style="color: var(--text-muted);">&mdash;</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+        </tr>
+        <tr>
+          <td><strong>Enterprise SSO (SAML &amp; SCIM)</strong></td>
+          <td><span style="color: var(--text-muted);">&mdash;</span></td>
+          <td><span style="color: var(--text-muted);">&mdash;</span></td>
+          <td><span style="color: var(--text-muted);">&mdash;</span></td>
+          <td><span style="color: var(--text-muted);">&mdash;</span></td>
+          <td><span class="pill-badge pill-emerald">Included</span></td>
+        </tr>
+        <tr>
+          <td><strong>Support SLA &amp; Onboarding</strong></td>
+          <td>Standard Email (24h)</td>
+          <td>Priority Chat &amp; Email</td>
+          <td>Dedicated Slack Channel</td>
+          <td>Dedicated Account Eng.</td>
+          <td>24/7 Pager &amp; 15m SLA</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Autonomy Engine Levels (L1 to L5) Explained</h3>
+    <ul>
+      <li><strong>L1 (Manual Mode):</strong> Posts, copy, and visual templates are created manually by team members; scheduling requires explicit human date-time entry.</li>
+      <li><strong>L2 (Assisted AI &mdash; Starter Tier):</strong> AI provides copywriting prompts, hashtags, and template adaptations on demand; human must trigger and approve every dispatch.</li>
+      <li><strong>L3 (Supervised Autonomy &mdash; Growth Tier):</strong> The autonomous agent drafts posts based on campaign schedules and product catalogs. Automatically routes drafts to approval queues; dispatches once approved.</li>
+      <li><strong>L4 (High Autonomy &mdash; Agency Pro Tier):</strong> The agent creates campaigns, runs A/B variant copy generation, and dispatches routine posts automatically under predefined risk scores; alerts humans only on brand voice anomalies.</li>
+      <li><strong>L5 (Full Autonomy &mdash; Scale &amp; Enterprise Tiers):</strong> Continuous self-optimizing loop. The AI agent analyzes audience retention metrics, identifies top-performing visual formats, drafts and dispatches content, and recalibrates posting intervals automatically.</li>
+    </ul>
+
+    <h3>Multi-Dimensional Quota Metering &amp; Warning Alerts</h3>
+    <p>
+      Tenant consumption is tracked in real-time across 7 dimensions (Posts, Social Channels, Brands, Seats, AI Tokens, Video Render Seconds, and S3 Storage Bytes).
+    </p>
+    <ul>
+      <li><strong>75% Usage Threshold:</strong> Non-intrusive in-app banner notifying workspace admin.</li>
+      <li><strong>90% Usage Threshold:</strong> High-priority dashboard banner and email advisory.</li>
+      <li><strong>100% Usage Threshold:</strong> Graceful degradation (drafting remains enabled; automated publish pauses until billing cycle reset or instant 1-click tier upgrade).</li>
+      <li><strong>Zero Data Deletion Guarantee:</strong> Past posts, analytics, media assets, and connected channel credentials are <strong>never deleted</strong> when limits are reached or during billing hiatus.</li>
+      <li><strong>Stripe Customer Portal:</strong> Self-service upgrade, downgrade, payment method updates, and cancel-at-period-end with automated 7-day dunning grace periods.</li>
+    </ul>
+
+    <!-- Section 11 -->
+    <h2>11. 6-Container Docker Production Topology</h2>
+    <div class="diagram-box">
+      <div class="mermaid">
+graph TD
+    Client["User Browser"] -->|Port 80/443| Web["socialforge-prod-web (Nginx Reverse Proxy & React SPA)"]
+    Web -->|Proxy /api| API["socialforge-prod-api (Express REST API)"]
+    API -->|Port 3306| DB[("socialforge-prod-mysql (MySQL 8.4)")]
+    API -->|Port 6379| Redis[("socialforge-prod-redis (Redis 7.2)")]
+    API -->|Port 9000| MinIO[("socialforge-prod-minio (S3 Storage)")]
+    Worker["socialforge-prod-worker (BullMQ + FFmpeg)"] --> DB
+    Worker --> Redis
+    Worker --> MinIO
+      </div>
+    </div>
+    <p>
+      Orchestrated via <code>docker-compose.prod.yml</code> with automated migration execution and zero-race health sequencing.
+    </p>
+
+    <!-- Section 12 -->
+    <h2>12. Verified Production Invariants & Compliance Status</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Operational Invariant / Test Suite</th>
+          <th>Verification Metric</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Permanent Meta Publication Lock</strong></td>
+          <td>Variant <code>1405588742634526_122100337179498315</code> &amp; job <code>256cf21a-26cd-4032-a7b8-17261d8a81b1</code></td>
+          <td><span class="pill-badge pill-emerald">STRICTLY LOCKED</span></td>
+        </tr>
+        <tr>
+          <td><strong>Golden Flagship Product E2E Journey</strong></td>
+          <td>111 / 111 Passed (100%)</td>
+          <td><span class="pill-badge pill-emerald">PASS (100%)</span></td>
+        </tr>
+        <tr>
+          <td><strong>CI/CD Docker Production Smoke Suite</strong></td>
+          <td>17 / 17 Passed (100%)</td>
+          <td><span class="pill-badge pill-emerald">PASS (100%)</span></td>
+        </tr>
+        <tr>
+          <td><strong>Stage 4 Template Engine Suite</strong></td>
+          <td>125 / 125 Passed (100%)</td>
+          <td><span class="pill-badge pill-emerald">PASS (100%)</span></td>
+        </tr>
+        <tr>
+          <td><strong>Canva Studio &amp; AI Poster Pipeline</strong></td>
+          <td>47 / 47 Passed (100%)</td>
+          <td><span class="pill-badge pill-emerald">PASS (100%)</span></td>
+        </tr>
+        <tr>
+          <td><strong>Docker Setup &amp; Container Packaging</strong></td>
+          <td>18 / 18 Setup + 15 / 15 Packaging Checks Passed</td>
+          <td><span class="pill-badge pill-emerald">PASS (100%)</span></td>
+        </tr>
+        <tr>
+          <td><strong>Database Migration Ledger</strong></td>
+          <td>All 76 Migrations Applied &amp; Synchronized</td>
+          <td><span class="pill-badge pill-emerald">ZERO SCHEMA DRIFT</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+  </main>
+
+</body>
+</html>

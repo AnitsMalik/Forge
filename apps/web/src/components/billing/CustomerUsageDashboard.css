@@ -1,0 +1,412 @@
+/* Customer Usage Dashboard CSS (Phase 8) */
+.customer-usage-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+/* Warnings & Alerts */
+.cud-warning-banners {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cud-alert {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.cud-alert-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cud-alert-100 {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #dc2626;
+}
+
+.cud-alert-90 {
+  background: rgba(249, 115, 22, 0.08);
+  border: 1px solid rgba(249, 115, 22, 0.3);
+  color: #ea580c;
+}
+
+.cud-alert-80 {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #d97706;
+}
+
+.cud-alert-btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.cud-alert-btn-red {
+  background: #dc2626;
+  color: #ffffff;
+}
+.cud-alert-btn-red:hover {
+  background: #b91c1c;
+}
+
+.cud-alert-btn-orange {
+  background: #ea580c;
+  color: #ffffff;
+}
+.cud-alert-btn-orange:hover {
+  background: #c2410c;
+}
+
+.cud-alert-btn-amber {
+  background: #d97706;
+  color: #ffffff;
+}
+.cud-alert-btn-amber:hover {
+  background: #b45309;
+}
+
+/* Subscription Overview Card */
+.cud-subscription-card {
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  border-radius: 14px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cud-sub-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.cud-plan-info h3 {
+  margin: 0 0 6px 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cud-status-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.cud-status-active {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.cud-status-cancelled {
+  background: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.cud-sub-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg-subtle, #f8fafc);
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle, #e2e8f0);
+}
+
+.cud-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cud-meta-label {
+  font-size: 0.75rem;
+  color: var(--text-muted, #64748b);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cud-meta-value {
+  font-size: 0.9375rem;
+  color: var(--text-primary, #0f172a);
+  font-weight: 600;
+}
+
+/* Plan Benefits */
+.cud-benefits-section h4 {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cud-benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.cud-benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.84rem;
+  color: var(--text-secondary, #334155);
+}
+
+.cud-benefit-check {
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+/* Quota Telemetry Grid */
+.cud-quotas-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.cud-quotas-header h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+}
+
+.cud-quotas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 16px;
+}
+
+.cud-quota-card {
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cud-quota-card:hover {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.cud-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cud-card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cud-card-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cud-card-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+}
+
+.cud-badge-pill {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 12px;
+  text-transform: uppercase;
+}
+
+.cud-badge-normal {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+}
+.cud-badge-warning {
+  background: rgba(245, 158, 11, 0.12);
+  color: #d97706;
+}
+.cud-badge-critical {
+  background: rgba(249, 115, 22, 0.12);
+  color: #ea580c;
+}
+.cud-badge-exceeded {
+  background: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
+}
+
+.cud-progress-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cud-progress-track {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-track, #e2e8f0);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.cud-progress-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.cud-metrics-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8125rem;
+  color: var(--text-secondary, #475569);
+  font-weight: 500;
+}
+
+.cud-metrics-row strong {
+  color: var(--text-primary, #0f172a);
+  font-weight: 700;
+}
+
+.cud-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-subtle, #f1f5f9);
+  font-size: 0.75rem;
+  color: var(--text-muted, #64748b);
+}
+
+.cud-inline-upgrade-btn {
+  background: transparent;
+  border: 1px solid var(--border-subtle, #cbd5e1);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent-primary, #2563eb);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.cud-inline-upgrade-btn:hover {
+  background: rgba(37, 99, 235, 0.06);
+  border-color: var(--accent-primary, #2563eb);
+}
+
+/* History Tables */
+.cud-history-section {
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-subtle, #e2e8f0);
+  border-radius: 14px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cud-history-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cud-table-wrapper {
+  overflow-x: auto;
+}
+
+.cud-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.cud-table th {
+  text-align: left;
+  padding: 10px 14px;
+  background: var(--bg-subtle, #f8fafc);
+  color: var(--text-muted, #64748b);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--border-subtle, #e2e8f0);
+}
+
+.cud-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-subtle, #f1f5f9);
+  color: var(--text-primary, #0f172a);
+}
+
+.cud-download-btn {
+  background: transparent;
+  border: 1px solid var(--border-subtle, #cbd5e1);
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-primary, #0f172a);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.cud-download-btn:hover {
+  background: var(--bg-subtle, #f1f5f9);
+}

@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HoaspForge — High-Level Design (HLD) Document</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        darkMode: true,
+        background: '#0d111c',
+        primaryColor: '#8b5cf6',
+        primaryBorderColor: '#a78bfa',
+        primaryTextColor: '#ffffff',
+        lineColor: '#38bdf8',
+        secondaryColor: '#ec4899',
+        tertiaryColor: '#1e293b'
+      }
+    });
+  </script>
+  <style>
+    :root {
+      --bg-primary: #0a0d14;
+      --bg-card: #0f172a;
+      --bg-surface: #1e293b;
+      --border-color: #334155;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-primary: #8b5cf6;
+      --accent-secondary: #ec4899;
+      --accent-success: #10b981;
+      --accent-info: #0ea5e9;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.65;
+      padding: 0 0 80px 0;
+    }
+
+    /* Top Floating Toolbar */
+    .top-toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 32px;
+      display: flex;
+      justifyContent: space-between;
+      align-items: center;
+    }
+
+    .toolbar-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-primary) 0%, #7c3aed 100%);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+    }
+    .btn-primary:hover { opacity: 0.92; transform: translateY(-1px); }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: var(--border-color);
+      color: var(--text-primary);
+    }
+    .btn-secondary:hover { background: rgba(255, 255, 255, 0.12); }
+
+    /* Main Container */
+    .container {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    /* Header Banner */
+    .doc-header {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(236, 72, 153, 0.08) 100%);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 12px;
+      padding: 36px;
+      margin-bottom: 40px;
+    }
+
+    .doc-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 12px;
+      background: rgba(139, 92, 246, 0.25);
+      border: 1px solid var(--accent-primary);
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #c4b5fd;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1.25;
+      margin-bottom: 12px;
+      color: #ffffff;
+    }
+
+    .doc-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .doc-meta-item strong { color: #ffffff; }
+
+    /* Headings */
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 48px 0 16px 0;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h3 {
+      font-size: 1.18rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin: 28px 0 12px 0;
+    }
+
+    h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin: 20px 0 8px 0;
+    }
+
+    p { margin-bottom: 16px; color: #cbd5e1; font-size: 0.96rem; }
+
+    ul, ol {
+      margin-bottom: 20px;
+      padding-left: 24px;
+      color: #cbd5e1;
+    }
+
+    li { margin-bottom: 8px; font-size: 0.95rem; }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0;
+      background: var(--bg-card);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.04);
+      padding: 12px 16px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #e2e8f0;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    td {
+      padding: 12px 16px;
+      font-size: 0.88rem;
+      color: #cbd5e1;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+    /* Code & Callouts */
+    pre, code { font-family: var(--font-mono); }
+
+    code {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+      color: #f472b6;
+    }
+
+    pre {
+      background: #020617;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 18px;
+      overflow-x: auto;
+      margin: 20px 0;
+    }
+
+    pre code {
+      background: transparent;
+      padding: 0;
+      color: #e2e8f0;
+      font-size: 0.86rem;
+    }
+
+    /* Diagram Containers */
+    .mermaid-container {
+      background: #060913;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 24px;
+      margin: 24px 0;
+      overflow-x: auto;
+      text-align: center;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 20px;
+      margin: 16px 0;
+    }
+
+    /* Print / PDF Media Styles */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      .top-toolbar { display: none !important; }
+      .container { max-width: 100% !important; padding: 0 !important; }
+      .doc-header {
+        background: none !important;
+        border: 1px solid #ccc !important;
+        color: #000 !important;
+      }
+      h1, h2, h3, h4, p, span, strong, td, th, li {
+        color: #000000 !important;
+      }
+      table, pre, .mermaid-container, .card {
+        border-color: #ddd !important;
+        background: #fafafa !important;
+      }
+      code {
+        color: #111 !important;
+        background: #eee !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Floating Action Toolbar -->
+  <div class="top-toolbar">
+    <div class="toolbar-title">
+      <span>🚀 HoaspForge</span>
+      <span style="color: var(--text-muted);">/</span>
+      <span style="color: #c4b5fd;">High-Level Design Document</span>
+    </div>
+    <div class="toolbar-actions">
+      <button class="btn btn-secondary" onclick="window.location.href='HLD.md'">
+        📄 View Markdown (.md)
+      </button>
+      <button class="btn btn-primary" onclick="window.print()">
+        🖨️ Print / Save as PDF
+      </button>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Header Banner -->
+    <div class="doc-header">
+      <div class="doc-badge">Master Architecture Specification</div>
+      <h1>HoaspForge — High-Level Design (HLD)</h1>
+      <p style="font-size: 1.05rem; margin-bottom: 0;">
+        Enterprise-grade multi-tenant AI social media platform: multimodal generation, dynamic Satori templates, broadcast FFmpeg 9:16 video compilation, resilient multi-platform dispatch, and cryptographic client approval portals.
+      </p>
+      <div class="doc-meta">
+        <div class="doc-meta-item">Version: <strong>1.0.0 (Production)</strong></div>
+        <div class="doc-meta-item">Architecture: <strong>Distributed Modular Monorepo</strong></div>
+        <div class="doc-meta-item">Status: <strong>Approved & Implemented</strong></div>
+        <div class="doc-meta-item">Date: <strong>September 2026</strong></div>
+      </div>
+    </div>
+
+    <!-- Section 1 -->
+    <h2>1. Executive Summary & Purpose</h2>
+    <p>
+      <strong>HoaspForge</strong> is engineered for marketing agencies, multi-brand holding companies, and digital creators. The platform unifies the full content lifecycle into an integrated system:
+    </p>
+
+    <pre><code>[Brand Identity & Voice Guidelines]
+              │
+              ▼
+[Multimodal AI Generation (Text, Posters, 9:16 Video Reels)]
+              │
+              ▼
+[Internal & External Magic-Link Client Review Engine]
+              │
+              ▼
+[Timezone-Aware Scheduling & Resilient Dispatch]
+              │
+              ▼
+[Multi-Platform Publishing (Real Live APIs & Sandbox Simulator)]
+              │
+              ▼
+[Real-Time Analytics, Performance Telemetry & Reporting]</code></pre>
+
+    <!-- Section 2 -->
+    <h2>2. High-Level Architecture (C4 Model)</h2>
+    
+    <h3>2.1 System Context Diagram (C4 Level 1)</h3>
+    <div class="mermaid-container">
+      <div class="mermaid">
+graph TB
+    subgraph "Users & Stakeholders"
+        AgencyUser["Agency Creator / Manager\n(Authenticated User)"]
+        ExternalClient["External Client Approver\n(Magic Token Access)"]
+    end
+
+    subgraph "HoaspForge Platform"
+        HoaspForge["HoaspForge Platform\n(Web, API, Worker, Datastores)"]
+    end
+
+    subgraph "External Cloud Services & Social Networks"
+        MetaAPI["Meta Graph API\n(Instagram & Facebook)"]
+        TwitterAPI["X / Twitter API v2"]
+        LinkedInAPI["LinkedIn UGC & Marketing API"]
+        TikTokAPI["TikTok Content Posting API"]
+        OpenAIAPI["OpenAI API\n(GPT-4o Structured Outputs)"]
+        ObjectStorage["S3 / Cloudflare R2 / MinIO\n(Media Asset Storage)"]
+    end
+
+    AgencyUser -->|HTTPS :5173 / :4000| HoaspForge
+    ExternalClient -->|HTTPS Magic Portal| HoaspForge
+    HoaspForge -->|API Requests| OpenAIAPI
+    HoaspForge -->|Presigned Uploads & Reads| ObjectStorage
+    HoaspForge -->|Live Post Publishing| MetaAPI
+    HoaspForge -->|Live Post Publishing| TwitterAPI
+    HoaspForge -->|Live Post Publishing| LinkedInAPI
+    HoaspForge -->|Live Post Publishing| TikTokAPI
+      </div>
+    </div>
+
+    <h3>2.2 Container Topology (C4 Level 2)</h3>
+    <div class="mermaid-container">
+      <div class="mermaid">
+graph TB
+    subgraph "Client Layer"
+        BrowserSPA["apps/web (React 18 + Vite)\nPort: 5173\nGlassmorphic UI & Live Feed Previews"]
+    end
+
+    subgraph "Application Services Layer"
+        ExpressAPI["apps/api (Node.js + Express)\nPort: 4000\nREST Endpoints, Auth, Scheduling, Adapters"]
+        BullWorker["apps/worker (BullMQ Queue Worker)\nFFmpeg Video Engine, AI Pipelines, Analytics Sync"]
+    end
+
+    subgraph "Shared Foundation"
+        SharedLib["packages/shared\nUniversal TypeScript Types, Zod Schemas, Domain Contracts"]
+    end
+
+    subgraph "Data & Persistence Layer"
+        MySQLDB[("MySQL 9.x / 8.4 Database\nPort: 3308 / 3306\nSchema: socialforge_db")]
+        RedisStore[("Redis 7.2 Cache & Broker\nPort: 6379\nBullMQ Queues & Fast Token Cache")]
+        MinIOStore[("MinIO Object Storage (S3-Compatible)\nPort: 9000 / 9001\nBucket: socialforge-media")]
+    end
+
+    BrowserSPA -->|REST API Calls (JWT Bearer)| ExpressAPI
+    BrowserSPA -.->|Direct Browser Uploads| MinIOStore
+
+    ExpressAPI -->|Read / Write SQL| MySQLDB
+    ExpressAPI -->|Enqueue Jobs & Token Invalidation| RedisStore
+    ExpressAPI -->|Sign Presigned URLs & Read Assets| MinIOStore
+
+    BullWorker -->|Consume Queued Jobs| RedisStore
+    BullWorker -->|Update Status & Metrics| MySQLDB
+    BullWorker -->|Read Raw / Write Rendered Media| MinIOStore
+
+    ExpressAPI -.-> SharedLib
+    BullWorker -.-> SharedLib
+    BrowserSPA -.-> SharedLib
+      </div>
+    </div>
+
+    <!-- Section 3 -->
+    <h2>3. Core Subsystems & Component Design</h2>
+
+    <h3>3.1 Frontend Presentation Layer (<code>apps/web</code>)</h3>
+    <ul>
+      <li><strong>Stack:</strong> React 18, TypeScript, Vite, Vanilla CSS Design System with dark mode glassmorphism.</li>
+      <li><strong>Content Studio & Composer:</strong> Multi-channel composer with real-time character counters, brand voice compliance meters, and live device mockups for Instagram, X, LinkedIn, and TikTok.</li>
+      <li><strong>AI Design Studio:</strong> Canvas visual layer editor allowing text, shapes, badges, and image layers with drag-and-drop, aspect-ratio switching (1:1, 4:5, 9:16), and SVG rasterization.</li>
+      <li><strong>Reel Motion Studio:</strong> 9:16 vertical short-form video creator with AI storyboarding, subtitle styling, and audio track pairing.</li>
+      <li><strong>Calendar & Timeline Engine:</strong> Interactive visual planner supporting week/month views, drag-and-drop rescheduling, and timezone localization.</li>
+    </ul>
+
+    <h3>3.2 Backend REST API Service (<code>apps/api</code>)</h3>
+    <ul>
+      <li><strong>Stack:</strong> Node.js, Express, TypeScript, Knex.js SQL query builder.</li>
+      <li><strong>TenantContext Middleware:</strong> Extracts and verifies JWT on every request; enforces <code>tenant_id</code> scoping across all database operations.</li>
+      <li><strong>CryptoVault Service:</strong> AES-256-GCM authenticated encryption for OAuth access tokens and client secrets stored in MySQL.</li>
+      <li><strong>SSRF Shield:</strong> Validates all incoming external asset URLs, enforcing public IP resolution and blocking access to loopback (<code>127.0.0.1</code>), private RFC1918 subnets (<code>10.0.0.0/8</code>, <code>192.168.0.0/16</code>), and cloud metadata IP (<code>169.254.169.254</code>).</li>
+      <li><strong>In-Memory Sliding-Window Rate Limiter:</strong> Brute-force protection returning <code>HTTP 429</code> with standard <code>RateLimit-*</code> and <code>Retry-After</code> headers.</li>
+    </ul>
+
+    <h3>3.3 AI Brain & Generation Engine</h3>
+    <ul>
+      <li><strong>Engine:</strong> OpenAI GPT-4o with Structured JSON Output enforcement.</li>
+      <li><strong>Brand Kit Compliance:</strong> Automatically injects brand tone, target personas, prohibited taboo words, and mandatory legal disclaimers into LLM system prompts.</li>
+      <li><strong>10 Specialized Formats & 11 Transformation Modes:</strong> Formats for Instagram captions, X threads, LinkedIn thought leadership, TikTok scripts, and multi-language translation.</li>
+    </ul>
+
+    <h3>3.4 Dynamic Graphic & Video Rendering Subsystem</h3>
+    <ul>
+      <li><strong>SVG & Image Template Engine:</strong> Generates production-ready vector graphics dynamically across 4 standard aspect ratios: <code>1:1</code>, <code>4:5</code>, <code>1.91:1</code>, and <code>9:16</code>.</li>
+      <li><strong>Native FFmpeg 9:16 Video Engine:</strong> Fully automated video rendering pipeline generating 1080×1920 (9:16) portrait MP4 files with H.264 video and AAC audio codecs. Dynamic Gaussian boxblur backdrops, hardcoded ASS subtitle burn-in, and dynamic sidechain audio ducking.</li>
+    </ul>
+
+    <!-- Section 4 -->
+    <h2>4. Data Architecture & Relational Entity Model</h2>
+    <div class="mermaid-container">
+      <div class="mermaid">
+erDiagram
+    TENANTS ||--o{ USERS : owns
+    TENANTS ||--o{ BRANDS : owns
+    BRANDS ||--o| BRAND_KITS : configures
+    BRANDS ||--o{ SOCIAL_ACCOUNTS : connects
+    BRANDS ||--o{ CAMPAIGNS : organizes
+    BRANDS ||--o{ POSTS : contains
+    BRANDS ||--o{ MEDIA_ASSETS : stores
+    POSTS ||--o{ POST_VARIANTS : adapts
+    POSTS ||--o{ APPROVAL_REQUESTS : requires
+    APPROVAL_REQUESTS ||--o{ APPROVAL_COMMENTS : receives
+    POST_VARIANTS ||--o{ PUBLISH_LOGS : records
+    POST_VARIANTS ||--o{ ANALYTICS_METRICS : tracks
+      </div>
+    </div>
+
+    <!-- Section 5 -->
+    <h2>5. End-to-End Sequence Workflows</h2>
+    <div class="mermaid-container">
+      <div class="mermaid">
+sequenceDiagram
+    autonumber
+    actor Creator as Content Creator
+    participant Web as React SPA
+    participant API as Express API
+    participant AI as OpenAI GPT-4o
+    participant DB as MySQL DB
+    participant Adapter as Social Adapter
+    participant Social as Live Network (Meta/X/LI)
+
+    Creator->>Web: Selects Brand & requests AI Copy with prompt
+    Web->>API: POST /api/v1/brands/:brandId/ai/generate
+    API->>DB: Fetch Brand Voice, Taboo Words, Guidelines
+    API->>AI: Chat Completion (Structured JSON)
+    AI-->>API: Platform-adapted variants (IG, X, LinkedIn, TikTok)
+    API-->>Web: Return 4 platform variants with compliance score
+    Creator->>Web: Chooses/designs graphic in AI Studio & clicks "Publish Live"
+    Web->>API: POST /api/v1/brands/:brandId/posts (create post + variants)
+    API->>DB: Persist post & variants records
+    Web->>API: POST /api/v1/brands/:brandId/posts/:postId/publish-now
+    API->>DB: Lock status = 'publishing' (Idempotency Guard)
+    API->>DB: Fetch active Social Account credentials (AES-256 decrypted)
+    API->>Adapter: adapter.publish(variant, credentials)
+    alt Live Production Account
+        Adapter->>Social: Execute real API POST (e.g. Meta container + publish)
+        Social-->>Adapter: Return HTTP 200 + real remote post URL
+    else Mock Sandbox Account
+        Adapter-->>Adapter: Simulate latency + generate sandbox identifier
+    end
+    Adapter-->>API: PublishResult (remotePostId, remotePostUrl, httpStatus: 200)
+    API->>DB: Record publish_logs & update post_variants status = 'published'
+    API->>DB: Upsert initial analytics_metrics
+    API-->>Web: Return success response with remote live URLs
+    Web-->>Creator: Display "Post Published Live" modal & direct live links
+      </div>
+    </div>
+
+    <!-- Section 6 -->
+    <h2>6. Non-Functional Requirements & Security Architecture</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Requirement</th>
+          <th>Architectural Implementation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Data Isolation</strong></td>
+          <td>Strict Multi-Tenant Separation</td>
+          <td>Every SQL query enforces <code>tenant_id</code> and <code>brand_id</code>. Foreign key cascade rules.</td>
+        </tr>
+        <tr>
+          <td><strong>Secret Management</strong></td>
+          <td>Zero Plaintext Credentials</td>
+          <td>Social tokens encrypted with <strong>AES-256-GCM</strong> with unique initialization vectors (<code>iv</code>) and auth tags.</td>
+        </tr>
+        <tr>
+          <td><strong>SSRF Prevention</strong></td>
+          <td>Cloud Metadata Leakage Defense</td>
+          <td>URL validation resolves hostnames, checks IP ranges, and blocks loopback, private RFC1918 subnets, and <code>169.254.169.254</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>Rate Limiting</strong></td>
+          <td>Brute-force Shield</td>
+          <td>In-memory sliding-window limiter on sensitive endpoints (<code>/auth/*</code>, <code>/publish-now</code>). Returns <code>HTTP 429</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>Timezone Precision</strong></td>
+          <td>Deterministic Multi-Timezone Scheduling</td>
+          <td>Schedules computed via Luxon brand-local conversion and stored in UTC; executed via BullMQ queue timers.</td>
+        </tr>
+        <tr>
+          <td><strong>Publishing Idempotency</strong></td>
+          <td>Zero Duplicate Posts</td>
+          <td>Status locks prevent race conditions during parallel publish triggers or retry attempts.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Section 7 -->
+    <h2>7. Infrastructure & Deployment Matrix</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Container / Service</th>
+          <th>Image / Runtime</th>
+          <th>Port (Host:Container)</th>
+          <th>Function</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong><code>socialforge-web</code></strong></td>
+          <td>Node.js 20 / Nginx (Alpine)</td>
+          <td><code>5173:5173</code> (Dev) / <code>80:80</code> (Prod)</td>
+          <td>Single Page Application frontend</td>
+        </tr>
+        <tr>
+          <td><strong><code>socialforge-api</code></strong></td>
+          <td>Node.js 20 LTS</td>
+          <td><code>4000:4000</code></td>
+          <td>REST API service, Auth &amp; Orchestration</td>
+        </tr>
+        <tr>
+          <td><strong><code>socialforge-worker</code></strong></td>
+          <td>Node.js 20 + Native FFmpeg</td>
+          <td>N/A (Internal Queue Consumer)</td>
+          <td>Video rendering, BullMQ jobs, Analytics ingestion</td>
+        </tr>
+        <tr>
+          <td><strong><code>socialforge-mysql</code></strong></td>
+          <td>MySQL 9.x / 8.4 Community</td>
+          <td><code>3308:3306</code></td>
+          <td>Primary relational transactional database</td>
+        </tr>
+        <tr>
+          <td><strong><code>socialforge-redis</code></strong></td>
+          <td>Redis 7.2 Alpine</td>
+          <td><code>6379:6379</code></td>
+          <td>Queue broker, sliding-window cache, pub/sub</td>
+        </tr>
+        <tr>
+          <td><strong><code>socialforge-minio</code></strong></td>
+          <td>MinIO RELEASE (S3 API)</td>
+          <td><code>9000:9000</code> / <code>9001:9001</code> (Console)</td>
+          <td>Media object storage &amp; presigned URL provider</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Footer Note -->
+    <div style="margin-top: 60px; padding: 20px; border-top: 1px solid var(--border-color); text-align: center; font-size: 0.82rem; color: var(--text-muted);">
+      HoaspForge Engineering Team • Enterprise Multi-Brand AI Social Media Platform • Documentation Master Version 1.0.0
+    </div>
+  </div>
+
+</body>
+</html>
